@@ -1,0 +1,17 @@
+Constant Story "ProjectAli";
+Constant Headline "^An Interactive Worked Example^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object FirstRoom "~Great Plaza~"
+	with description "Or so your notes call this low escarpment of limestone, but the rainforest has claimed it back. Dark olive trees crowd in on all sides, the air steams with the mist of a warm recent rain, midges hang in the air. ~Structure 10~ is a shambles of masonry which might once have been a burial pyramid, and little survives except stone-cut steps leading down into darkness below."
+	has light;
+	
+[ Initialise;
+	location = FirstRoom;
+	"^^^^Days of searching, days of thirsty hacking through the briars of the forest, but at last your patience was rewarded. A discovery!^";
+];
+
+Include "Grammar";
+
