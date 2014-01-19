@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<trizbort>
+	<info />
+	<map>
+		<room id="1" name="Loading Docks/Helipad" x="-448" y="-32" w="160" h="128" description="" />
+		<room id="2" name="Corridor Intersection" x="-224" y="0" w="128" h="64" description="" />
+		<room id="3" name="Bulk Storage" x="160" y="-32" w="160" h="128" description="">
+			<objects at="wsw">Shark food canister</objects>
+		</room>
+		<line id="5">
+			<dock index="0" id="1" port="e" />
+			<dock index="1" id="2" port="w" />
+		</line>
+		<room id="6" name="Control Room" x="-224" y="128" w="128" h="96" description="" />
+		<line id="7">
+			<dock index="0" id="6" port="n" />
+			<dock index="1" id="2" port="s" />
+		</line>
+		<room id="8" name="Shark Tank" x="-224" y="-160" w="128" h="96" description="" />
+		<line id="9">
+			<dock index="0" id="2" port="n" />
+			<dock index="1" id="8" port="s" />
+		</line>
+		<room id="4" name="Corridor Intersection" x="-32" y="0" w="128" h="64" description="" />
+		<room id="10" name="Detention Level" x="-32" y="128" w="128" h="96" description="" />
+		<line id="11">
+			<dock index="0" id="4" port="s" />
+			<dock index="1" id="10" port="n" />
+		</line>
+		<line id="12">
+			<dock index="0" id="2" port="e" />
+			<dock index="1" id="4" port="w" />
+		</line>
+		<room id="13" name="Cell" x="160" y="160" w="64" h="32" description="" />
+		<line id="14">
+			<dock index="0" id="10" port="e" />
+			<dock index="1" id="13" port="w" />
+		</line>
+		<line id="15">
+			<dock index="0" id="3" port="w" />
+			<dock index="1" id="4" port="e" />
+		</line>
+		<room id="16" name="Project G.R.U.E. " x="-32" y="-160" w="128" h="96" description="" />
+		<line id="17">
+			<dock index="0" id="16" port="s" />
+			<dock index="1" id="4" port="n" />
+		</line>
+	</map>
+	<settings>
+		<colors>
+			<canvas>#004000</canvas>
+			<fill>Black</fill>
+			<border>MidnightBlue</border>
+			<line>Blue</line>
+			<selectedLine>SteelBlue</selectedLine>
+			<hoverLine>DarkOrange</hoverLine>
+			<largeText>#80FF00</largeText>
+			<smallText>MidnightBlue</smallText>
+			<lineText>MidnightBlue</lineText>
+			<grid>Green</grid>
+		</colors>
+		<fonts>
+			<room size="15.75">Zeroes Three</room>
+			<object size="11">Comic Sans MS</object>
+			<line size="9">Comic Sans MS</line>
+		</fonts>
+		<grid>
+			<snapTo>yes</snapTo>
+			<visible>yes</visible>
+			<showOrigin>yes</showOrigin>
+			<size>32</size>
+		</grid>
+		<lines>
+			<width>5</width>
+			<handDrawn>no</handDrawn>
+			<arrowSize>12</arrowSize>
+			<textOffset>4</textOffset>
+		</lines>
+		<rooms>
+			<darknessStripeSize>24</darknessStripeSize>
+			<objectListOffset>4</objectListOffset>
+			<connectionStalkLength>32</connectionStalkLength>
+			<preferredDistanceBetweenRooms>64</preferredDistanceBetweenRooms>
+		</rooms>
+		<ui>
+			<handleSize>12</handleSize>
+			<snapToElementSize>16</snapToElementSize>
+		</ui>
+		<keypadNavigation>
+			<creationModifier>control</creationModifier>
+			<unexploredModifier>alt</unexploredModifier>
+		</keypadNavigation>
+	</settings>
+</trizbort>
