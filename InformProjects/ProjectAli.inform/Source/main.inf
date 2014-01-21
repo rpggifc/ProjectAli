@@ -1,17 +1,60 @@
-Constant Story "ProjectAli";
-Constant Headline "^An Interactive Worked Example^";
+Constant Story "ProjectAli - Minion";
+Constant Headline "^A Comminuty Developed Game by the GIFC on RPGGeek^Copyright 2014 Andrew Potozniak, Dean Svendsen, etc^Input and Playtesting from ____ ^";
+
+Release 1;
+
+Constant MAX_SCORE = 141;
+Constant DEBUGGING;
 
 Include "Parser";
 Include "VerbLib";
 
-Object FirstRoom "~Great Plaza~"
-	with description "Or so your notes call this low escarpment of limestone, but the rainforest has claimed it back. Dark olive trees crowd in on all sides, the air steams with the mist of a warm recent rain, midges hang in the air. ~Structure 10~ is a shambles of masonry which might once have been a burial pyramid, and little survives except stone-cut steps leading down into darkness below."
-	has light;
+
+Object Cell "Cell"
+	with initial [;
+		if (location hasnt visited) "^(If this is your first time playing, be sure to type HELP)";
+     	],
+	with description "You are in a cell, a very boring cell."
+	has light scenery;
+
+Object Bed "bed" Cell
+	with name 'bed'
+	with before [;
+		Examine: return false;
+		Look: <Examine self>;
+		Search: <Examine self>; rtrue;
+	],
+
+	has static supporter;
 	
 [ Initialise;
-	location = FirstRoom;
+	location = Cell;
+	score = 0;
 	"^^^^Days of searching, days of thirsty hacking through the briars of the forest, but at last your patience was rewarded. A discovery!^";
+];
+
+[ HelpSub;
+  style bold;
+  print "Project Ali - Minion - An Interactive Fiction Story by the RPGGeek GIFC.^^";
+  style roman;
+
+  "You're far beyond help at this point!  We haven't even coded up any of the game!  Best bet is to just quit.";
 ];
 
 Include "Grammar";
 
+verb meta 'info' 'information' 'credits' 'about' 'help'
+	*		-> Help
+	* noun 	-> Help;
+
+Extend 'look' first
+	* 		-> Look
+!   * 'down' ->LookDown
+	* noun 	-> Examine;
+!   * 'time' -> LookTime
+!   * 'time of day' -> LookTime
+!   * 'watch' -> LookTime
+!   * 'up' ->LookUp
+!   * 'behind' noun -> Search
+!   * 'self' ->LookMe
+!   * 'me'   ->LookMe;
