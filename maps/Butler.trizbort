@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<trizbort>
+	<info />
+	<map>
+		<room id="1" name="Master's Quarters" x="-256" y="-128" w="96" h="64" description="" />
+		<room id="2" name="Foyer" x="-128" y="64" w="96" h="64" description="" />
+		<room id="3" name="Main Hall" x="-128" y="-32" w="96" h="64" description="" />
+		<room id="4" name="Kitchen" x="0" y="-32" w="96" h="64" description="" />
+		<room id="5" name="Butler's Quarters" x="-256" y="-32" w="96" h="64" description="" />
+		<line id="7">
+			<dock index="0" id="2" port="n" />
+			<dock index="1" id="3" port="s" />
+		</line>
+		<room id="9" name="Pantry" x="128" y="-32" w="96" h="64" description="" />
+		<line id="10">
+			<dock index="0" id="9" port="w" />
+			<dock index="1" id="9" port="w" />
+		</line>
+		<room id="6" name="Top of Stairs" x="-128" y="-128" w="96" h="64" description="" />
+		<room id="11" name="Library" x="0" y="-128" w="96" h="64" description="" />
+		<line id="12">
+			<dock index="0" id="11" port="w" />
+			<dock index="1" id="6" port="e" />
+		</line>
+		<line id="13">
+			<dock index="0" id="1" port="e" />
+			<dock index="1" id="6" port="w" />
+		</line>
+		<line id="14">
+			<dock index="0" id="6" port="s" />
+			<dock index="1" id="3" port="n" />
+		</line>
+		<line id="8">
+			<dock index="0" id="3" port="w" />
+			<dock index="1" id="5" port="e" />
+		</line>
+	</map>
+	<settings>
+		<colors>
+			<canvas>#D6D6D1</canvas>
+			<fill>White</fill>
+			<border>#804000</border>
+			<line>#808040</line>
+			<selectedLine>SteelBlue</selectedLine>
+			<hoverLine>DarkOrange</hoverLine>
+			<largeText>#804000</largeText>
+			<smallText>MidnightBlue</smallText>
+			<lineText>MidnightBlue</lineText>
+			<grid>#F5F5F5</grid>
+		</colors>
+		<fonts>
+			<room size="14.25">Lucida Calligraphy</room>
+			<object size="11">Comic Sans MS</object>
+			<line size="9">Comic Sans MS</line>
+		</fonts>
+		<grid>
+			<snapTo>yes</snapTo>
+			<visible>no</visible>
+			<showOrigin>yes</showOrigin>
+			<size>32</size>
+		</grid>
+		<lines>
+			<width>2</width>
+			<handDrawn>yes</handDrawn>
+			<arrowSize>12</arrowSize>
+			<textOffset>4</textOffset>
+		</lines>
+		<rooms>
+			<darknessStripeSize>24</darknessStripeSize>
+			<objectListOffset>4</objectListOffset>
+			<connectionStalkLength>32</connectionStalkLength>
+			<preferredDistanceBetweenRooms>64</preferredDistanceBetweenRooms>
+		</rooms>
+		<ui>
+			<handleSize>12</handleSize>
+			<snapToElementSize>16</snapToElementSize>
+		</ui>
+		<keypadNavigation>
+			<creationModifier>control</creationModifier>
+			<unexploredModifier>alt</unexploredModifier>
+		</keypadNavigation>
+	</settings>
+</trizbort>
