@@ -4,13 +4,18 @@
 <dict>
 	<key>IFCompilerOptions</key>
 	<dict>
+		<key>IFSettingCompilerVersion</key>
+		<string>6.32</string>
 		<key>IFSettingNaturalInform</key>
 		<false/>
 	</dict>
 	<key>IFInform6Extensions</key>
 	<dict/>
 	<key>IFLibrarySettings</key>
-	<dict/>
+	<dict>
+		<key>IFSettingLibraryToUse</key>
+		<string>Standard</string>
+	</dict>
 	<key>IFMiscSettings</key>
 	<dict>
 		<key>IFSettingElasticTabs</key>

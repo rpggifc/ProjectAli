@@ -1,38 +1,113 @@
 Constant Story "ProjectAli - Minion";
-Constant Headline "^A Comminuty Developed Game by the GIFC on RPGGeek^Copyright 2014 Andrew Potozniak, Dean Svendsen, etc^Input and Playtesting from ____ ^";
+Constant Headline "^A Comminuty Developed Game by the GIFC on RPGGeek^Copyright 2014 Andrew Potozniak, Dean Svendsen, etc^Input and Playtesting from Dave Bernazzani, _____, etc^";
 
 Release 1;
 
 Constant MAX_SCORE = 141;
-Constant DEBUGGING;
+!Constant DEBUGGING;
 
 Include "Parser";
 Include "VerbLib";
-
-
-Object Cell "Cell"
-	with initial [;
-		if (location hasnt visited) "^(If this is your first time playing, be sure to type HELP)";
-     	],
-	with description "You are in a cell, a very boring cell."
+!----------------- Classes -----------------
+Class Room
 	has light scenery;
 
-Object Bed "bed" Cell
-	with name 'bed'
+Class Item
+	with before [;
+		Search,Look: <Examine self>; rtrue;
+	],
+	has ;
+
+Class Prop
 	with before [;
 		Examine: return false;
 		Look: <Examine self>;
 		Search: <Examine self>; rtrue;
 	],
+	has scenery concealed;
 
+Class Furniture
+	with before [;
+		Take, Pull, Push, PushDir:
+		if (self has pluralname)
+			print_ret (The) self, " are too heavy for that.";
+		else
+			print_ret (The) self, " is too heavy for that.";
+		Search,Look: <Examine self>; rtrue;
+	],
 	has static supporter;
+
+Class NPC
+    with life [;
+    ],
+    has animate male talkable;
+
+!----------------- Rooms / Scenery / Props -----------------
+Room Nowhere "nowhere" has;
+
+Room Cell "Cell"
+	with initial [;
+		if (location hasnt visited) "^(If this is your first time playing, be sure to type HELP)";
+     	],
+	with description "You are in a cell, a very boring cell.",
+	w_to DetentionLevel,  !Need to figure out how to make it where you can't exit the cell until you gas the person that's in the bed.
+	has ;
+
+!The bed should be movable when the person no longer is in it, and will reveal a hole that the player can go down in.
+Furniture Bed "bed" Cell
+	with name 'bed'
+	has ;
+
+Prop GasMachine "Gas Machine" Cell
+	with name 'gasmachine' 'machine'
+	has ;
+
+Room DetentionLevel "Detention Level"
+	with description "You are in the detention level.  This brings back memories of high school.",
+	e_to Cell,
+	has ;
 	
+!----------------- Rooms -----------------
+Item JumpSuit "Jump Suit"
+	!with name 'jumpsuit' 'suit',
+	with parse_name [
+		n w1;
+		n = 0;
+		w1 = NextWord();
+		if (w1 == 'jump' && NextWord() == 'suit') n = n+2;
+		if (w1 == 'jumpsuit' or 'suit' or 'cloths' or 'outfit') n = n+1;
+		return n;
+	],
+	with description "It is a dark blue jump suit with white and black lines down the arms, sides and the legs.  It also has a few pockets to store stuff.  Very fashionable.",
+	with before [;	disrobe: "You start to take off the jumpsuit, but notice a waft of chest hair.  You guess you're probably not wearing anything underneath it, plus we'd much rather you keep your cloths on!  You think twice about removing the Jump Suit and zip the top back up.";
+				drop: "You'd have to take the Jump Suit off to do that!";
+				search:	if (badge in Nowhere) {
+            						move badge to player;
+            						score++;
+							"You start checking the many pockets that are in the jump suit, most of them are empty, except the last one.  You reach your hand in and pull out a badge.  EUREKA!  ";
+						}
+						else{
+							"You frisk yourself and find nothing else interesting in the jump suit!  If people are watching they probably think you're nuts.";
+						}
+	;],
+	has clothing container;
+
+Item Badge "badge" Nowhere
+	with name 'badge',
+	with description "It is a badge for the XYZ Corp, but there is no picture and the name says Dave.",
+	with after [; 	wear: "You attach the badge to the jump suit and give yourself a toothy grin.  You look like you're ready for work!";]
+	has clothing;
+
 [ Initialise;
 	location = Cell;
 	score = 0;
-	"^^^^Days of searching, days of thirsty hacking through the briars of the forest, but at last your patience was rewarded. A discovery!^";
+	move jumpsuit to player;
+	give jumpsuit worn;
+	
+	"^^^^You wake up in a cell, wearing an interesting jump suit.  You have no recolection on how you got here, and as you move your hand to your head you find a very tender spot.  As you touch it you wince.^";
 ];
 
+!----------------- Subroutines -----------------
 [ HelpSub;
   style bold;
   print "Project Ali - Minion - An Interactive Fiction Story by the RPGGeek GIFC.^^";

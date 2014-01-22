@@ -1,11 +1,33 @@
 <?xml version="1.0"?>
-<Skein rootNode="node-0x2282a0" xmlns="http://www.logicalshift.org.uk/IF/Skein">
+<Skein rootNode="node-0x64d970" xmlns="http://www.logicalshift.org.uk/IF/Skein">
   <generator>Zoom</generator>
-  <activeNode nodeId="node-0x2282a0" />
-  <item nodeId="node-0x2282a0">
+  <activeNode nodeId="node-0x64d970" />
+  <item nodeId="node-0x64d970">
     <command xml:space="preserve">- start -</command>
+    <result xml:space="preserve">
+
+
+
+
+You wake up in a cell, wearing an interesting jump suit.  You have no recolection on how you got here, and as you move your hand to your head you find a very tender spot.  As you touch it you wince.
+
+ProjectAli - Minion
+A Comminuty Developed Game by the GIFC on RPGGeek
+Copyright 2014 Andrew Potozniak, Dean Svendsen, etc
+Input and Playtesting from Dave Bernazzani, _____, etc
+Release 1 / Serial number 140121 / Inform v6.32 Library 6/11 SD
+
+(If this is your first time playing, be sure to type HELP)
+
+Cell
+You are in a cell, a very boring cell.
+
+You can see a bed here.
+
+&gt;</result>
+    <commentary xml:space="preserve"></commentary>
     <played>YES</played>
-    <changed>YES</changed>
-    <temporary score="0">NO</temporary>
+    <changed>NO</changed>
+    <temporary score="214">NO</temporary>
   </item>
 </Skein>
