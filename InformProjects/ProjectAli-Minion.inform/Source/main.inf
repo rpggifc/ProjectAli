@@ -8,6 +8,10 @@ Constant MAX_SCORE = 141;
 
 Include "Parser";
 Include "VerbLib";
+
+!----------------- Globals -----------------
+Global gasmask_solved = 0;
+
 !----------------- Classes -----------------
 Class Room
 	has light scenery;
@@ -49,31 +53,102 @@ Room Cell "Cell"
 	with initial [;
 		if (location hasnt visited) "^(If this is your first time playing, be sure to type HELP)";
      	],
-	with description "You are in a cell, a very boring cell.",
-	w_to DetentionLevel,  !Need to figure out how to make it where you can't exit the cell until you gas the person that's in the bed.
+	with description "You are in a cell, a very boring cell.  There is a door to the west.",
+	w_to [;CheckAccessToDetentionLevel(); rtrue;],
 	has ;
 
 !The bed should be movable when the person no longer is in it, and will reveal a hole that the player can go down in.
 Furniture Bed "bed" Cell
-	with name 'bed'
+	with name 'bed',
 	has ;
 
-Prop GasMachine "Gas Machine" Cell
-	with name 'gasmachine' 'machine'
+NPC Prisoner "prisoner" Bed
+	with name 'prisoner',
+	description [;
+		"The prisoner, a male, is laying strapped to the bed.  His eyes are open and he looks at you puzzled.";
+	],
+	react_before[;
+		!Take:  if (noun == skeleton_key) "The sever-geist holds up one finger and briskly motions it side to side. Doesn't look like he's going to give up the key so easily.";
+	],
+    	before [;
+		Talk: "The prisoner looks at you bumfuzzled.^(If you have something specific you want to say to the prisoner, phrase it like: SAY HELLO TO PRISONER or ASK PRISONER ABOUT TOPIC)";
+		!Thank: "~Not sure why you're thanking me!  Don't you have a job to do?~  He motions toward the gas mask.";
+		!Kiss: "Seriously?  Ummmm, no!";
+		!Hug: "Now is not the time or place for hugging.";
+		!Attack,Kick: "It may be in your best interest not to upset the prisoner too much!";
+	],
+	each_turn[;
+		if(gasmask in prisoner){
+			"He's Gassed Jim!";
+		}
+		else{
+			switch (random(10)){
+				1: "^The prisoner tries to losen the straps holding him down by struggling against them for a bit.";
+				2: "^The prisoner mutters something under his breath.";
+				3: "^The prisoner looks at you, looks at the gas mask and sighs.";
+			}
+		}
+	],
+	with life [;
+		Answer:
+		switch(noun){
+			'hello', 'hallo', 'hi': "~Do what you mean to do to me and be done with it!~  The prisoner tries to spit at you but manages to miss.";
+			'thanks', 'thank', 'you': "~Not sure why you're thanking me!  Don't you have a job to do?~  He motions toward the gas mask.";
+			default: "The prisoner blankly stares at you.";
+		}
+		Ask:
+		switch(second){
+			'badge': "The geist looks around nervously.";
+			'dave': if (badge in player && badge has worn) "The prisoner looks you over.  ~That must be you, you're badge says so  Funny, there is no picture of you, first day?!~"; "~Never heard of him!~";
+			'aiden': "~Never heard of him!~";
+		}
+		Tell:  "The prisoner watches you intently, but says nothing in response.";
+		Order: "~How much longer will we do this dance for?  Be done with what you came here to do!~";
+		Show: 
+			if (noun == badge) "The prisoner looks at the badge leaning forward a bit.  ~You must be Dave.  Funny, there is no picture of you, first day?  I'd introduce myself to you, but the situation warrents otherwise.~";
+		rfalse;
+		Give: if (noun == gasmask) {
+			move gasmask to prisoner;
+			give gasmask worn;
+			gasmask_solved = 1;
+			"You place the gas mask around the nose and mouth of the prisoner, and he seems to mutter ~About time!~, but you're not sure as his eyes roll to the back of his head and he falls asleep.  You hear a click from the door.";
+			score = score + 5;
+		} 
+		else "~Really?  Tell me more!  That was sacrasm if you couldn't tell!~";
+	],
+	with orders [;
+		default:"~I'm strapped to this bed, not only that do you really think I'd do what you want me to?~";
+	],
 	has ;
+
+Furniture GasMachine "gas machine" Cell
+	with parse_name [
+		n w1; n = 0; w1 = NextWord();
+		if (w1 == 'gas' && NextWord() == 'machine') n = n+2;
+		if (w1 == 'gasmachine' or 'machine') n = n+1;
+		return n;
+	],
+	has ;
+
+Item GasMask "gas mask" Cell
+	with parse_name [
+		n w1; n = 0; w1 = NextWord();
+		if (w1 == 'gas' && NextWord() == 'mask') n = n+2;
+		if (w1 == 'gasmask' or 'mask') n = n+1;
+		return n;
+	],
+	has clothing;
 
 Room DetentionLevel "Detention Level"
 	with description "You are in the detention level.  This brings back memories of high school.",
 	e_to Cell,
 	has ;
 	
-!----------------- Rooms -----------------
+!----------------- Items -----------------
 Item JumpSuit "Jump Suit"
 	!with name 'jumpsuit' 'suit',
 	with parse_name [
-		n w1;
-		n = 0;
-		w1 = NextWord();
+		n w1; n = 0; w1 = NextWord();
 		if (w1 == 'jump' && NextWord() == 'suit') n = n+2;
 		if (w1 == 'jumpsuit' or 'suit' or 'cloths' or 'outfit') n = n+1;
 		return n;
@@ -94,7 +169,7 @@ Item JumpSuit "Jump Suit"
 
 Item Badge "badge" Nowhere
 	with name 'badge',
-	with description "It is a badge for the XYZ Corp, but there is no picture and the name says Dave.",
+	with description "It is a badge for the XYZ Corp, but there is no picture but it looks like there is a name on it.  The name says ~Dave.~",
 	with after [; 	wear: "You attach the badge to the jump suit and give yourself a toothy grin.  You look like you're ready for work!";]
 	has clothing;
 
@@ -103,8 +178,9 @@ Item Badge "badge" Nowhere
 	score = 0;
 	move jumpsuit to player;
 	give jumpsuit worn;
+!	move prisoner to bed;  Not needed if Prisoner's parent is Bed
 	
-	"^^^^You wake up in a cell, wearing an interesting jump suit.  You have no recolection on how you got here, and as you move your hand to your head you find a very tender spot.  As you touch it you wince.^";
+	"~Ow!  Dammit!  You klutz!  You IMBECILE!~^^You look up at Doctor Damnation from your prone position, sprawled on the floor at his feet.  His boots and lower trousers are splattered with coffee, the incriminating mug still clutched in your hand.^^You scramble to your feet, and start mopping at his clothes with a fistful of paperwork from the Doctor's laboratory desk.  He cuffs you violently across the face, and you find yourself sprawled back on the ground.^^~Get.  Out.~  He bites off each syllable with icy control.  ~Go feed the sharks.~  He smiles, without warmth or humour - his cybernetic left eye showing no less compassion or mercy than his remaining biological one.^^~Stay and watch them feast.  Next time you screw up - you'll be joining them.~^^With that dire pronouncement, he turns back to his experiments - and you take the opportunity to scramble backwards out of the mad Doctor's laboratory.^^As you make your way to the shark tank, you notice that the light outside the cell is flashing red, and you decide to investigate.  As you enter the door, something hits the side of your head and you fall unconcious.^^^^You wake up in a cell, wearing an interesting jump suit.  You have no recolection on how you got here, and as you move your hand to your head you find a very tender spot.  As you touch it you wince.^";
 ];
 
 !----------------- Subroutines -----------------
@@ -116,7 +192,27 @@ Item Badge "badge" Nowhere
   "You're far beyond help at this point!  We haven't even coded up any of the game!  Best bet is to just quit.";
 ];
 
+!Needs to have a verb definition to be able to make this work.  Then you can also add it to the NPC class which is "talkable"
+[ TalkSub;
+  "The proper way of talking to someone is like this: ~SAY <something> TO <someone>~. For example, ~SAY HELLO TO MAN~. 
+   Try to keep the words short and simple - and do not be too verbose since it is hard for the game to interpret too many words.";
+];
+
+[CheckAccessToDetentionLevel;
+	if (gasmask_solved == 1){
+		print "As you press your hand on the door it slides open automatically.  Neat, you think to yourself, technology!^";
+		PlayerTo(DetentionLevel);
+	}
+	else{
+		"Try as you might, the door won't budge open!  It appears to be locked.";
+	}
+];
+
 Include "Grammar";
+
+Verb 'talk'
+	* 'with' animate -> Talk
+	* 'to' animate   -> Talk;
 
 verb meta 'info' 'information' 'credits' 'about' 'help'
 	*		-> Help
