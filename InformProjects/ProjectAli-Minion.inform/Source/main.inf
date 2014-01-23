@@ -53,7 +53,7 @@ Room Cell "Cell"
 	with initial [;
 		if (location hasnt visited) "^(If this is your first time playing, be sure to type HELP)";
      	],
-	with description "You are in a cell, a very boring cell.  There is a door to the west.",
+	with description "You are in a cell, a very boring cell.  There is a closed door to the west.",
 	w_to [;CheckAccessToDetentionLevel(); rtrue;],
 	has ;
 
@@ -65,27 +65,38 @@ Furniture Bed "bed" Cell
 NPC Prisoner "prisoner" Bed
 	with name 'prisoner',
 	description [;
-		"The prisoner, a male, is laying strapped to the bed.  His eyes are open and he looks at you puzzled.";
-	],
-	react_before[;
-		!Take:  if (noun == skeleton_key) "The sever-geist holds up one finger and briskly motions it side to side. Doesn't look like he's going to give up the key so easily.";
-	],
-    	before [;
-		Talk: "The prisoner looks at you bumfuzzled.^(If you have something specific you want to say to the prisoner, phrase it like: SAY HELLO TO PRISONER or ASK PRISONER ABOUT TOPIC)";
-		!Thank: "~Not sure why you're thanking me!  Don't you have a job to do?~  He motions toward the gas mask.";
-		!Kiss: "Seriously?  Ummmm, no!";
-		!Hug: "Now is not the time or place for hugging.";
-		!Attack,Kick: "It may be in your best interest not to upset the prisoner too much!";
-	],
-	each_turn[;
+		print "The prisoner, a male, is laying strapped to the bed.  ";
 		if(gasmask in prisoner){
-			"He's Gassed Jim!";
+			"He has a gas mask on his face and is passed out.";
 		}
 		else{
+			"His eyes are open and he looks at you puzzled.";
+		}
+	],
+	react_before[;
+		!Take:  if (noun == gasmask) "Finally!";  This will stop the gas mask from being taken
+	],
+    	before [;
+		Talk: if(gasmask notin prisoner){"The prisoner looks at you bumfuzzled.^(If you have something specific you want to say to the prisoner, phrase it like: SAY HELLO TO PRISONER or ASK PRISONER ABOUT TOPIC)";} else {"The prisoner lay motionless on the bed.  He's out, so talking to him will do no good.  Perhaps you should've thought about this before you gassed him????";}
+		Thank: if(gasmask notin prisoner){"~Not sure why you're thanking me!  Don't you have a job to do?~  He motions toward the gas mask.";} else {"You get no response.  He is gassed after all, what do you expect?";}
+		Kiss: "Seriously?  Ummmm, no!";
+		Hug: "Now is not the time or place for hugging.";
+		Attack,Kick: "It may be in your best interest not to upset the prisoner too much!";
+		Shake: "That may loosen the straps, so it's probably not the best idea.  He's got to be in there for a reason.";
+	],
+	each_turn[;
+		if(gasmask notin prisoner){
 			switch (random(10)){
 				1: "^The prisoner tries to losen the straps holding him down by struggling against them for a bit.";
 				2: "^The prisoner mutters something under his breath.";
 				3: "^The prisoner looks at you, looks at the gas mask and sighs.";
+			}
+		}
+		else{
+			switch (random(10)){
+				1: "^The prisoner shakes a bit, but quickly calms down.";
+				2: "^You hear heavy breathing from the prisoner.";
+				3: "^The prisoner slightly snores.";
 			}
 		}
 	],
@@ -94,27 +105,32 @@ NPC Prisoner "prisoner" Bed
 		switch(noun){
 			'hello', 'hallo', 'hi': "~Do what you mean to do to me and be done with it!~  The prisoner tries to spit at you but manages to miss.";
 			'thanks', 'thank', 'you': "~Not sure why you're thanking me!  Don't you have a job to do?~  He motions toward the gas mask.";
-			default: "The prisoner blankly stares at you.";
+			default: "~Really?  Tell me more!  That was sacrasm if you couldn't tell!~";
 		}
 		Ask:
 		switch(second){
-			'badge': "The geist looks around nervously.";
-			'dave': if (badge in player && badge has worn) "The prisoner looks you over.  ~That must be you, you're badge says so  Funny, there is no picture of you, first day?!~"; "~Never heard of him!~";
+			'badge': if (badge in player && badge has worn) "You show the badge to the prisoner.  He seems unimpressed.  He might be more impressed it it had your picture on it!"; "~Looks like you should probably wear it.  But who am I to tell you what to do?~";
+			'dave': if (badge in player && badge has worn) "The prisoner looks you over.  ~That must be you, your badge says so!  Funny, there is no picture of you, first day?~"; "~Never heard of him!~";
 			'aiden': "~Never heard of him!~";
+			default: "~I have no information for you!  You're going to have to gas it out of me!~";
 		}
 		Tell:  "The prisoner watches you intently, but says nothing in response.";
 		Order: "~How much longer will we do this dance for?  Be done with what you came here to do!~";
 		Show: 
 			if (noun == badge) "The prisoner looks at the badge leaning forward a bit.  ~You must be Dave.  Funny, there is no picture of you, first day?  I'd introduce myself to you, but the situation warrents otherwise.~";
-		rfalse;
-		Give: if (noun == gasmask) {
-			move gasmask to prisoner;
-			give gasmask worn;
-			gasmask_solved = 1;
-			"You place the gas mask around the nose and mouth of the prisoner, and he seems to mutter ~About time!~, but you're not sure as his eyes roll to the back of his head and he falls asleep.  You hear a click from the door.";
-			score = score + 5;
-		} 
-		else "~Really?  Tell me more!  That was sacrasm if you couldn't tell!~";
+			rfalse;
+		Give: 
+			if (noun == gasmask) {
+				move gasmask to prisoner;
+				give gasmask worn;
+				gasmask_solved = 1;
+				score = score + 5;
+				"You place the gas mask around the nose and mouth of the prisoner, and he seems to mutter ~About time!~, but you're not sure as his eyes roll to the back of his head and he falls asleep.  You hear a click from the door.  He's gassed Jim!";
+			}
+			if (noun == badge){
+				"~Now what would I do with a badge?  Not only that my hands are tied down so I can't just reach out and accept it, now can I?~";
+			}
+		
 	],
 	with orders [;
 		default:"~I'm strapped to this bed, not only that do you really think I'd do what you want me to?~";
@@ -154,7 +170,7 @@ Item JumpSuit "Jump Suit"
 		return n;
 	],
 	with description "It is a dark blue jump suit with white and black lines down the arms, sides and the legs.  It also has a few pockets to store stuff.  Very fashionable.",
-	with before [;	disrobe: "You start to take off the jumpsuit, but notice a waft of chest hair.  You guess you're probably not wearing anything underneath it, plus we'd much rather you keep your cloths on!  You think twice about removing the Jump Suit and zip the top back up.";
+	with before [;	disrobe: "You start to take off the jumpsuit, but notice a massive waft of chest hair.  You guess you're probably not wearing anything underneath it, plus we'd much rather you keep your cloths on!  You think twice about removing the Jump Suit and zip the top back up.";
 				drop: "You'd have to take the Jump Suit off to do that!";
 				search:	if (badge in Nowhere) {
             						move badge to player;
@@ -169,7 +185,7 @@ Item JumpSuit "Jump Suit"
 
 Item Badge "badge" Nowhere
 	with name 'badge',
-	with description "It is a badge for the XYZ Corp, but there is no picture but it looks like there is a name on it.  The name says ~Dave.~",
+	with description "It is a badge for the XYZ Corp, there is a clip on the back to fasten it to something.  There is no picture but it looks like there is a name on it.  The name says ~Dave.~",
 	with after [; 	wear: "You attach the badge to the jump suit and give yourself a toothy grin.  You look like you're ready for work!";]
 	has clothing;
 
@@ -178,33 +194,66 @@ Item Badge "badge" Nowhere
 	score = 0;
 	move jumpsuit to player;
 	give jumpsuit worn;
-!	move prisoner to bed;  Not needed if Prisoner's parent is Bed
+	gasmask_solved = 0;
 	
 	"~Ow!  Dammit!  You klutz!  You IMBECILE!~^^You look up at Doctor Damnation from your prone position, sprawled on the floor at his feet.  His boots and lower trousers are splattered with coffee, the incriminating mug still clutched in your hand.^^You scramble to your feet, and start mopping at his clothes with a fistful of paperwork from the Doctor's laboratory desk.  He cuffs you violently across the face, and you find yourself sprawled back on the ground.^^~Get.  Out.~  He bites off each syllable with icy control.  ~Go feed the sharks.~  He smiles, without warmth or humour - his cybernetic left eye showing no less compassion or mercy than his remaining biological one.^^~Stay and watch them feast.  Next time you screw up - you'll be joining them.~^^With that dire pronouncement, he turns back to his experiments - and you take the opportunity to scramble backwards out of the mad Doctor's laboratory.^^As you make your way to the shark tank, you notice that the light outside the cell is flashing red, and you decide to investigate.  As you enter the door, something hits the side of your head and you fall unconcious.^^^^You wake up in a cell, wearing an interesting jump suit.  You have no recolection on how you got here, and as you move your hand to your head you find a very tender spot.  As you touch it you wince.^";
 ];
 
 !----------------- Subroutines -----------------
 [ HelpSub;
-  style bold;
-  print "Project Ali - Minion - An Interactive Fiction Story by the RPGGeek GIFC.^^";
-  style roman;
+	style bold;
+	print "Project Ali - Minion - An Interactive Fiction Story by the RPGGeek GIFC.^^";
+	style roman;
 
-  "You're far beyond help at this point!  We haven't even coded up any of the game!  Best bet is to just quit.";
+	"You're far beyond help at this point!  We haven't even coded up any of the game!  Best bet is to just quit.";
 ];
 
 !Needs to have a verb definition to be able to make this work.  Then you can also add it to the NPC class which is "talkable"
 [ TalkSub;
-  "The proper way of talking to someone is like this: ~SAY <something> TO <someone>~. For example, ~SAY HELLO TO MAN~. 
-   Try to keep the words short and simple - and do not be too verbose since it is hard for the game to interpret too many words.";
+	"The proper way of talking to someone is like this: ~SAY <something> TO <someone>~. For example, ~SAY HELLO TO MAN~. 
+	Try to keep the words short and simple - and do not be too verbose since it is hard for the game to interpret too many words.";
+];
+
+[ThankSub;
+	"I'm not sure who you are trying to thank.";
+];
+
+[ThankYouSub;
+	"You're welcome, I guess???";
+];
+
+[HugSub;
+	"Awww... cute.";
+];
+
+[ShakeSub;
+	"That's not something you can easily shake.";
+];
+
+[KickSub;
+	<<Attack noun>>;
+];
+
+[LookMeSub;
+	if(badge in player && badge has worn){
+		"You look yourself over and you decide you look ready for work and give a toothy grin!";
+	}
+	else{
+		"You look at yourself and think you look rather dashing!";
+	}
+];
+
+[LookTimeSub;
+	"You must have left your watch in your other jumpsuit.  You have no idea what time it is.";
 ];
 
 [CheckAccessToDetentionLevel;
 	if (gasmask_solved == 1){
-		print "As you press your hand on the door it slides open automatically.  Neat, you think to yourself, technology!^";
+		print "As you press your hand on the door it slides open automatically.  As you step through the door closes behind you.  Neat, you think to yourself, technology!^";
 		PlayerTo(DetentionLevel);
 	}
 	else{
-		"Try as you might, the door won't budge open!  It appears to be locked.";
+		"Try as you might, and mightily you try, the door won't budge open!  It appears to be locked.";
 	}
 ];
 
@@ -221,11 +270,24 @@ verb meta 'info' 'information' 'credits' 'about' 'help'
 Extend 'look' first
 	* 		-> Look
 !   * 'down' ->LookDown
-	* noun 	-> Examine;
+	* noun 	-> Examine
 !   * 'time' -> LookTime
 !   * 'time of day' -> LookTime
-!   * 'watch' -> LookTime
+   * 'watch' -> LookTime
 !   * 'up' ->LookUp
 !   * 'behind' noun -> Search
-!   * 'self' ->LookMe
-!   * 'me'   ->LookMe;
+   * 'self' ->LookMe
+   * 'me'   ->LookMe;
+
+Extend only 'kiss' first
+    * noun -> Kiss;
+
+Extend only 'hug' first
+    * noun -> Hug;
+
+Verb 'shake'
+    * noun -> Shake;
+
+Verb 'thank'
+   * 'you' -> ThankYou
+   * noun -> Thank;
