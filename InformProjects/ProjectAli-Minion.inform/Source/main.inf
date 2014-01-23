@@ -150,16 +150,58 @@ Item GasMask "gas mask" Cell
 	with parse_name [
 		n w1; n = 0; w1 = NextWord();
 		if (w1 == 'gas' && NextWord() == 'mask') n = n+2;
-		if (w1 == 'gasmask' or 'mask') n = n+1;
+		if (w1 == 'gasmask' or 'mask' or 'gas') n = n+1;
 		return n;
 	],
 	has clothing;
 
 Room DetentionLevel "Detention Level"
-	with description "You are in the detention level.  This brings back memories of high school.",
+	with description "You are in the detention level.  This brings back memories of high school.  There is a closed door to the east, a path to the east",
+	n_to EastCooridorIntersection,
 	e_to Cell,
 	has ;
-	
+
+Room EastCooridorIntersection "East Cooridor Intersection"
+	with description "East Cooridor Intersection. ",
+	n_to ProjectGRUE,
+	e_to BulkStorage,
+	s_to DetentionLevel,
+	w_to WestCooridorIntersection,
+	has ;
+
+Room WestCooridorIntersection "West Cooridor Intersection"
+	with description "West Cooridor Intersection. ",
+	n_to SharkTank,
+	e_to EastCooridorIntersection,
+	s_to ControlRoom,
+	w_to LoadingDocksHelipad,
+	has ;
+
+Room BulkStorage "Bulk Storage"
+	with description "",
+	w_to EastCooridorIntersection,
+	has;
+
+Room ProjectGRUE "Project G.R.U.E."
+	with description "",
+	s_to EastCooridorIntersection,
+	has ~light;
+
+Room SharkTank "Shark Tank"
+	with description "",
+	s_to WestCooridorIntersection,
+	has;
+
+Room LoadingDocksHelipad "Loading Docks/Helipad"
+	with description "",
+	e_to WestCooridorIntersection,
+	has;
+
+Room ControlRoom "Control Room"
+	with description "",
+	n_to WestCooridorIntersection,
+	has;
+
 !----------------- Items -----------------
 Item JumpSuit "Jump Suit"
 	!with name 'jumpsuit' 'suit',
