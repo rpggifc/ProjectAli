@@ -12,6 +12,7 @@ Include "VerbLib";
 
 !----------------- Globals -----------------
 Global gasmask_solved = 0;
+Global badge_shown_to_henchman = 0;
 Global turns_in_darkness = 0;
 
 !----------------- Classes -----------------
@@ -111,7 +112,7 @@ NPC Prisoner "prisoner" Bed
 		}
 		Ask:
 		switch(second){
-			'badge': if (badge in player && badge has worn && gasmask notin prisoner) {"You show the badge to the prisoner.  He seems unimpressed.  He might be more impressed it it had your picture on it!";} else if (gasmask notin prisoner){ "~Looks like you should probably wear it.  But who am I to tell you what to do?~";} else { "ASK BADGE - You get no response from the gassed prisoner."; }
+			'badge': if (badge in player && badge has worn && gasmask notin prisoner) {"You show the badge to the prisoner.  He seems unimpressed.  He might be more impressed it it had your picture on it!";} else if (badge in player && badge hasnt worn && gasmask notin prisoner){ "~Looks like you should probably wear it.  But who am I to tell you what to do?~";} else if (gasmask notin prisoner){ "~What are you talking about?~";} else { "ASK BADGE - You get no response from the gassed prisoner."; }
 			'dave': if (badge in player && badge has worn && gasmask notin prisoner) {"The prisoner looks you over.  ~That must be you, your badge says so!  Funny, there is no picture of you, first day?~";} else if (gasmask notin prisoner){"~Never heard of him!~";} else {"ASK DAVE - You get no response from the gassed prisoner.";}
 			'aiden': if(gasmask notin prisoner){"~Never heard of him!~";} else {"ASK AIDEN - You get no response from the gassed prisoner.";}
 			default: if(gasmask notin prisoner){"~I have no information for you!  You're going to have to gas it out of me!~";} else {"ASK DEFAULT - You get no response from the gassed prisoner.";}
@@ -120,8 +121,8 @@ NPC Prisoner "prisoner" Bed
 		Order: if(gasmask notin prisoner){"~How much longer will we do this dance for?  Be done with what you came here to do!~";}else {"ORDER DEFAULT - You get no response from the gassed prisoner.";}
 		Show:
 			switch(noun){
-				'badge': if (gasmask notin prisoner) {"The prisoner looks at the badge leaning forward a bit.  ~You must be Dave.  Funny, there is no picture of you, first day?  I'd introduce myself to you, but the situation warrents otherwise.~";} else if (gasmask in prisoner) {"SHOW BADGE - You get no response from the gassed prisoner.";}
-				'gas mask':   if (gasmask notin prisoner) {"The prisoner says something whitty about the mask, but I can't think of anything whitty to say right now!";} else if (gasmask in prisoner) {"SHOW MASK - You get no response from the gassed prisoner.";}
+				badge: if (gasmask notin prisoner) {"The prisoner looks at the badge leaning forward a bit.  ~You must be Dave.  Funny, there is no picture of you, first day?  I'd introduce myself to you, but the situation warrents otherwise.~";} else if (gasmask in prisoner) {"SHOW BADGE - You get no response from the gassed prisoner.";}
+				gasmask:   if (gasmask notin prisoner) {"The prisoner says something whitty about the mask, but I can't think of anything whitty to say right now!";} else if (gasmask in prisoner) {"SHOW MASK - You get no response from the gassed prisoner.";}
 			}
 			
 		Give: 
@@ -180,9 +181,88 @@ Item GasMask "gas mask" Cell
 
 Room DetentionLevel "Detention Level"
 	with description "You are in the detention level.  This brings back memories of high school.  There is a closed door to the east.",
-	n_to EastCooridorIntersection,
+	n_to [;CheckBadgeShownToHenchman(); rtrue;],
 	e_to [; print "The door slides open as you approach it and you easily pass through it.  As you enter the next room the door slams shut with a resounding clank!^"; PlayerTo(Cell); rtrue;],
 	has ;
+
+NPC MaskedHenchman "Masked Henchman" DetentionLevel
+	with parse_name[
+		n w1; n = 0; w1 = NextWord();
+		if (w1 == 'masked' && NextWord() == 'henchman') n = n+2;
+		if (w1 == 'toadie' or 'lacky' or 'henchman') n = n+1;
+		return n;
+	],
+	description [;
+		print "The Masked Henchman is a massive sculpted male that stands at least shoulders and head taller than you.";
+		!if(gasmask in prisoner){
+		!	"He has a gas mask on his face and is passed out.";
+		!}
+		!else{
+		!	"His eyes are open and he looks at you puzzled.";
+		!}
+	],
+	react_before[;
+		!Take:  if (noun == gasmask) "Finally!";  This will stop the gas mask from being taken
+	],
+    	before [;
+		Talk: "The Henchman does not look like he's the talkative type.";
+		Thank: "~If you're thanking me for not putting you through this door head first, then you're welcome!!";
+		Kiss: "~Do I need to smack you back into yesterday?  I'll make you wish you never lived!  Don't you DARE come close to me to try to kiss me!  That is both a threat and a warning!~";
+		Hug: "It doesn't look like the Henchman needs a hug.";
+		Attack,Kick: "Uh, you think if you tried that he'd kick you through the door back into the cell and through the bed.  It would be wise to avoid doing this!";
+		Shake: "Are you daft?  This henchmans has biceps bigger than your head!";
+	],
+	each_turn[;
+		if(badge_shown_to_henchman == 0){
+			switch (random(10)){
+				1: "^HENCHMAN DOES SOMETHING INTIMIDATING #1.";
+				2: "^HENCHMAN DOES SOMETHING INTIMIDATING #2.";
+				3: "^HENCHMAN DOES SOMETHING INTIMIDATING #3.";
+				4: "^HENCHMAN DOES SOMETHING INTIMIDATING #4.";
+				5: "^HENCHMAN DOES SOMETHING INTIMIDATING #5.";
+				6: "^HENCHMAN DOES SOMETHING INTIMIDATING #6.";
+				7: "^HENCHMAN DOES SOMETHING INTIMIDATING #7.";
+			}
+		}
+		else{
+			switch (random(10)){
+				1: "^HENCHMAND DOES SOMETHING LESS INTIMIDATING #1.";
+				1: "^HENCHMAND DOES SOMETHING LESS INTIMIDATING #2.";
+				1: "^HENCHMAND DOES SOMETHING LESS INTIMIDATING #3.";
+			}
+		}
+	],
+	with life [;
+		Answer:
+		switch(noun){
+			'hello', 'hallo', 'hi', 'hullo': "ANSWER HELLO - The Henchman nods.";
+			'thanks', 'thank', 'you': "ANSWER THANKS - The Henchman nods.";
+			default: "ANSWER DEFAULT - You're not sure, but you think you've confused the Henchman.";
+		}
+		Ask:
+		switch(second){
+			'badge': if (badge in player && badge has worn) {"You show the badge to the Henchman.  He seems unimpressed, but he waves you on.";} else { "ASK BADGE - ~Looks like you should probably wear it.  But who am I to tell you what to do?~";} 
+			'dave': if (badge in player && badge has worn) {"ASK DAVE, HAS BADGE AND IS WORN - The Henchman looks at you, ~Is this some type of trick question?  You must be Dave, that's at least what your badge states.  Unless you stole it from someone?~";}  else {"ASK DAVE - ~I heard he might be the new guy, is that you?~";}
+			'aiden': "";
+			default: "ASK DEFAULT - The Henchman ignores you.";
+		}
+		Tell:  "TELL DEFAULT - The Henchman says ~Uh huh.. .. ..~ rather dismissively.";
+		Order: "ORDER DEFAULT - ~Maybe you don't understand how this works.  You're new here, you take orders from me, not the other way around!~  The Henchman looks like he's going to hit you.";
+		Show:
+			switch(noun){
+				badge: if (badge in player && badge has worn && badge_shown_to_henchman == 0) {badge_shown_to_henchman = 1; "~Ah well, you have the badge, I guess I'll let you go past!~"; } else {"SHOW BADGE - You get no response from the Henchman.";}
+				'gas mask':   if (gasmask notin prisoner) {"The prisoner says something whitty about the mask, but I can't think of anything whitty to say right now!";} else if (gasmask in prisoner) {"SHOW MASK - You get no response from the gassed prisoner.";}
+			}
+			
+		Give: 
+			!Probably should do something here if the given object is the badge.
+			"~What would I want with that?~";
+		
+	],
+	with orders [;
+		default: "ORDER DEFAULT - ~Maybe you don't understand how this works.  You're new here, you take orders from me, not the other way around!~  The Henchman looks like he's going to hit you.";
+	],
+	has;
 
 Prop CellDoor2 "cell door" DetentionLevel
 	with parse_name [
@@ -329,6 +409,22 @@ Item Badge "badge" Nowhere
 	<<Attack noun>>;
 ];
 
+[GasPrisonerSub;
+	if(gasmask_solved == 0 && player in Cell){
+		move gasmask to prisoner;
+		give gasmask worn;
+		gasmask_solved = 1;
+		score = score + 5;
+		"You place the gas mask around the nose and mouth of the prisoner, and he seems to mutter ~About time!~, but you're not sure as his eyes roll to the back of his head and he falls asleep.  You hear a click from the door.  He's gassed Jim, or shall we call you Dave?!";
+	}
+	else{
+		"You raise one leg and slightly lean over. ~Pffffrrrrrt!!~";
+	}
+];
+
+[GasSub; "You raise one leg and slightly lean over. ~Pffffrrrrrt!!~";];
+
+
 [LookTimeSub;
 	"You must have left your watch in your other jumpsuit.  You have no idea what time it is.";
 ];
@@ -347,6 +443,35 @@ Item Badge "badge" Nowhere
 		"Try as you might, and mightily you try, the door won't budge open!  It appears to be locked.";
 	}
 ];
+
+[CheckBadgeShownToHenchman;
+	if(badge_shown_to_henchman == 1){
+		if(EastCooridorIntersection hasnt visited){
+			print "The Masked Henchman eyes you warrily as you walk past him.";
+		}
+		else{
+			print "The Masked Henchman is sleeping.";
+		}
+		PlayerTo(EastCooridorIntersection);
+	}
+	else{
+		if(badge notin player){
+			"The Henchman steps in the way and flexes his muscles.  ~Only employees of the XYZ Corp can go past!  Hmmmm are you really an employee, or are you the prisoner?~  The Henchman chuckles to himself ~First dayers, always fun to jostle!~  He does not let you get past him.  He seems to want to see some proof that you're with the XYZ Corp.";
+		}
+		else if (badge hasnt worn){
+			give badge worn;
+			badge_shown_to_henchman = 1;
+			"The Henchman stops you, prys the badge that you're holding from your hands and affixes it to your jumpsuit.  ~There, now you are official!~  He looks you over and says ~First dayers ever read the employee handbook?  Badges must be worn at all times!  Page 42 section 3 subsection 14!  You better get familiar with it!~";
+		}
+		else{
+			badge_shown_to_henchman = 1;
+			print "PLAYER IS WEARING THE BADGE BUT DID NOT SHOW IT TO THE HENCHMAN, WE SHOULD LET THEM PASS STILL.  MAYBE GIVE SOME TYPE OF WARNING THAT THEY SHOULD'VE SHOWN IT TO HIM FIRST.  NOT SURE.";
+			PlayerTo(EastCooridorIntersection);
+		}
+	}
+];
+
+!badge_shown_to_henchman
 
 Include "Grammar";
 
@@ -380,3 +505,8 @@ Verb 'shake'
 Verb 'thank'
 	* 'you' -> ThankYou
 	* noun -> Thank;
+
+Verb 'gas'
+	* 'prisoner' -> GasPrisoner
+	* -> Gas
+	* noun -> Gas;
