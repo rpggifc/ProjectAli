@@ -52,6 +52,7 @@ Class NPC
 !----------------- Rooms / Scenery / Props -----------------
 Room Nowhere "nowhere" has;
 
+!=================================
 Room Cell "Cell"
 	with initial [;
 		if (location hasnt visited) "^(If this is your first time playing, be sure to type HELP)";
@@ -179,6 +180,7 @@ Item GasMask "gas mask" Cell
 	],
 	has clothing;
 
+!=================================
 Room DetentionLevel "Detention Level"
 	with description "You are in the detention level.  This brings back memories of high school.  There is a closed door to the east.",
 	n_to [;CheckBadgeShownToHenchman(); rtrue;],
@@ -274,27 +276,37 @@ Prop CellDoor2 "cell door" DetentionLevel
 	with description "As you get close to the door slides open.",
 	has;
 
-Room EastCooridorIntersection "East Cooridor Intersection"
-	with description "East Cooridor Intersection. ",
+!=================================
+Room EastCorridorIntersection "East Corridor Intersection"
+	with description "",
 	n_to ProjectGRUE,
 	e_to BulkStorage,
 	s_to DetentionLevel,
-	w_to WestCooridorIntersection,
+	w_to WestCorridorIntersection,
 	has ;
 
-Room WestCooridorIntersection "West Cooridor Intersection"
-	with description "West Cooridor Intersection. ",
-	n_to SharkTank,
-	e_to EastCooridorIntersection,
+!=================================
+Room WestCorridorIntersection "West Corridor Intersection"
+	with description "",
+	n_to Barracks,
+	e_to EastCorridorIntersection,
 	s_to ControlRoom,
-	w_to LoadingDocksHelipad,
+	w_to AudienceChamber,
 	has ;
-
+	
+!=================================
+Room Barracks "Barracks"
+	with description "",
+	s_to WestCorridorIntersection,
+	has ;
+	
+!==================================
 Room BulkStorage "Bulk Storage"
 	with description "",
-	w_to EastCooridorIntersection,
+	w_to EastCorridorIntersection,
 	has;
 
+!=================================
 Room ProjectGRUE "Project G.R.U.E."
 	with description "TEST DESCRIPTION",
 	after [; Go: turns_in_darkness = 0;
@@ -308,22 +320,66 @@ Room ProjectGRUE "Project G.R.U.E."
 !You did not heed, the warnings seen.
 !A grue you think, has took your head!
 !So long for now, since you are dead!
-	s_to EastCooridorIntersection,
+	s_to EastCorridorIntersection,
 	has ~light;
 
-Room SharkTank "Shark Tank"
-	with description "",
-	s_to WestCooridorIntersection,
+!=================================
+Room AudienceChamber "Audience Chamber"
+	with description "You stand in Doctor Damnation's vast audience chamber.  Sunlight streams in from the glass and steel roof overhead and reflects off the chamber walls, natural volcanic rock polished to a mirror's smoothness.  The floor is a slab of glass, with the chamber continuing down for an unknowable depth, and filled with water up to the level of about six feet below the floor.  A dozen sharks circle lazily below.^An imposing throne sits atop a raised dais on the south wall.  Behind it, you see a small grey door bearing Doctor Damnation's crest.  Exits lie east and west.",
+	e_to WestCorridorIntersection,
+	w_to LoadingDocksCatwalk,
+	s_to InnerSanctum,
 	has;
 
+Prop "glass floor" AudienceChamber
+    with name 'glass' 'floor' 'ground',
+    with description "It's solid glass, or maybe some kind of acetate.  You see the outline of a trapdoor in the centre of the room, in front of the dais.",
+    has ;
+
+Prop "Audience Chamber Roof" AudienceChamber
+    with name 'roof' 'caldera' 'volcano' 'sky',
+    with description "The audience chamber has been excavated deeply into the volcano's caldera, and enclosed with a glass and steel roof.  Other than the brilliant blue sky, you can see a part of the volcano's rim from here.",
+    has ;
+
+Prop "dais" AudienceChamber
+    with name 'dais' 'platform',
+    with description "It's dais-ey.",
+    has ;
+
+Prop "Trapdoor" AudienceChamber 
+    with name 'trapdoor' 'trap door',
+    with description "It's subtle, all right - you can barely see the cuts in the glass.  You would guess that there's a switch or a button on the throne somewhere.",
+    has supporter;
+
+Prop "Throne" AudienceChamber 
+    with name 'throne' 'chair' 'seat' 'armrest',
+    with description "It looks intimidating, in a black leather and spiky kind of way.  On the armrest you see a control panel.",
+	has ;
+	
+	
+!=================================
+Room InnerSanctum "Inner Sanctum"
+	with description "",
+	n_to AudienceChamber,
+	has;
+
+!=================================
+Room LoadingDocksCatwalk "Loading Docks/Catwalk"
+	with description "",
+	e_to AudienceChamber,
+	d_to LoadingDocksHelipad,
+	has;
+
+!=================================
 Room LoadingDocksHelipad "Loading Docks/Helipad"
 	with description "",
-	e_to WestCooridorIntersection,
+	u_to LoadingDocksCatwalk,
 	has;
 
+!=================================
 Room ControlRoom "Control Room"
 	with description "",
-	n_to WestCooridorIntersection,
+	n_to WestCorridorIntersection,
 	has;
 
 !----------------- Items -----------------
@@ -446,13 +502,13 @@ Item Badge "badge" Nowhere
 
 [CheckBadgeShownToHenchman;
 	if(badge_shown_to_henchman == 1){
-		if(EastCooridorIntersection hasnt visited){
+		if(EastCorridorIntersection hasnt visited){
 			print "The Masked Henchman eyes you warrily as you walk past him.";
 		}
 		else{
 			print "The Masked Henchman is sleeping.";
 		}
-		PlayerTo(EastCooridorIntersection);
+		PlayerTo(EastCorridorIntersection);
 	}
 	else{
 		if(badge notin player){
@@ -466,7 +522,7 @@ Item Badge "badge" Nowhere
 		else{
 			badge_shown_to_henchman = 1;
 			print "PLAYER IS WEARING THE BADGE BUT DID NOT SHOW IT TO THE HENCHMAN, WE SHOULD LET THEM PASS STILL.  MAYBE GIVE SOME TYPE OF WARNING THAT THEY SHOULD'VE SHOWN IT TO HIM FIRST.  NOT SURE.";
-			PlayerTo(EastCooridorIntersection);
+			PlayerTo(EastCorridorIntersection);
 		}
 	}
 ];

@@ -2,21 +2,17 @@
 <trizbort>
 	<info />
 	<map>
-		<room id="1" name="Loading Docks/Helipad" x="-448" y="-32" w="160" h="128" description="" />
+		<room id="1" name="Loading Docks/Catwalk" x="-672" y="0" w="160" h="64" description="" />
 		<room id="2" name="Corridor Intersection" x="-224" y="0" w="128" h="64" description="" />
 		<room id="3" name="Bulk Storage" x="160" y="-32" w="160" h="128" description="">
 			<objects at="wsw">Shark food canister</objects>
 		</room>
-		<line id="5">
-			<dock index="0" id="1" port="e" />
-			<dock index="1" id="2" port="w" />
-		</line>
 		<room id="6" name="Control Room" x="-224" y="128" w="128" h="96" description="" />
 		<line id="7">
 			<dock index="0" id="6" port="n" />
 			<dock index="1" id="2" port="s" />
 		</line>
-		<room id="8" name="Shark Tank" x="-224" y="-160" w="128" h="96" description="" />
+		<room id="8" name="Barracks" x="-224" y="-160" w="128" h="96" description="" />
 		<line id="9">
 			<dock index="0" id="2" port="n" />
 			<dock index="1" id="8" port="s" />
@@ -44,6 +40,30 @@
 		<line id="17">
 			<dock index="0" id="16" port="s" />
 			<dock index="1" id="4" port="n" />
+		</line>
+		<room id="5" name="Audience Chamber / Shark Tank" x="-448" y="-64" w="192" h="192" description="" />
+		<line id="18">
+			<dock index="0" id="1" port="e" />
+			<dock index="1" id="5" port="w" />
+		</line>
+		<line id="19">
+			<dock index="0" id="5" port="e" />
+			<dock index="1" id="2" port="w" />
+		</line>
+		<room id="20" name="Inner Sanctum" x="-416" y="160" w="128" h="96" description="" />
+		<line id="21">
+			<dock index="0" id="5" port="s" />
+			<dock index="1" id="20" port="n" />
+		</line>
+		<room id="22" name="Loading Docks / Helipad" x="-672" y="96" w="160" h="160" description="" />
+		<line id="23">
+			<dock index="0" id="1" port="s" />
+			<dock index="1" id="22" port="n" />
+		</line>
+		<room id="24" name="Grue Room" x="-32" y="-256" w="128" h="64" description="" />
+		<line id="25">
+			<dock index="0" id="24" port="s" />
+			<dock index="1" id="24" port="s" />
 		</line>
 	</map>
 	<settings>
