@@ -278,7 +278,7 @@ Prop CellDoor2 "cell door" DetentionLevel
 
 !=================================
 Room EastCorridorIntersection "East Corridor Intersection"
-	with description "",
+	with description "You are at the east end of the corridor.  Doorways lie to the north, east, and south.",
 	n_to ProjectGRUE,
 	e_to BulkStorage,
 	s_to DetentionLevel,
@@ -286,8 +286,8 @@ Room EastCorridorIntersection "East Corridor Intersection"
 	has ;
 
 !=================================
-Room WestCorridorIntersection "West Corridor Intersection"
-	with description "",
+Room WestCorridorIntersection "East-West Corridor"
+	with description "The corridor runs eastward deeper into the mountain, and westward back to the audience chamber.  Doorways lie to the north and south.",
 	n_to Barracks,
 	e_to EastCorridorIntersection,
 	s_to ControlRoom,
@@ -296,15 +296,16 @@ Room WestCorridorIntersection "West Corridor Intersection"
 	
 !=================================
 Room Barracks "Barracks"
-	with description "",
+	with description "A dozen bunks line each of the walls of this narrow room, made up in military precision.  The whole room is painfully neat.  A small table sits beside the door.",
 	s_to WestCorridorIntersection,
 	has ;
 	
 !==================================
 Room BulkStorage "Bulk Storage"
-	with description "",
+	with description "Boxes, bags, barrels, crates, containers, and all manner of things that a secret hide-out needs fill the floor-to-ceiling shelves.",
 	w_to EastCorridorIntersection,
 	has;
+
 
 !=================================
 Room ProjectGRUE "Project G.R.U.E."
@@ -343,12 +344,12 @@ Prop "Audience Chamber Roof" AudienceChamber
 
 Prop "dais" AudienceChamber
     with name 'dais' 'platform',
-    with description "It's dais-ey.",
+    with description "It's dais-ey.  An imposing throne sits atop it.",
     has ;
 
 Prop "Trapdoor" AudienceChamber 
     with name 'trapdoor' 'trap door',
-    with description "It's subtle, all right - you can barely see the cuts in the glass.  You would guess that there's a switch or a button on the throne somewhere.",
+    with description "It's subtle, all right - you can barely see the lines in the floor.  You would guess that there's a switch or a button on the throne somewhere.",
     has supporter;
 
 Prop "Throne" AudienceChamber 
@@ -356,24 +357,41 @@ Prop "Throne" AudienceChamber
     with description "It looks intimidating, in a black leather and spiky kind of way.  On the armrest you see a control panel.",
 	has ;
 	
+Prop "Control Panel" AudienceChamber 
+    with name 'control' 'panel' 'control panel' 'display',
+    with description "There's a simple display and a small red button.  The display is blank.",
+	has ;	
+	
+Prop "Trapdoor Button" AudienceChamber 
+    with name 'button' 'red' 'red button',
+    with description "It glows red.",
+	has ;	
 	
 !=================================
 Room InnerSanctum "Inner Sanctum"
-	with description "",
+	with description "This is apparently where Doctor Damnation unwinds after a hard day's evil.  There's a comfy-looking couch opposite a truly massive television, a cocktail bar, a couple of bookshelves crammed with boardgames, a dissection slab, and a glass box bearing the legend 'In case of EMERGENCY, break glass'.",
 	n_to AudienceChamber,
 	has;
 
 !=================================
 Room LoadingDocksCatwalk "Loading Docks/Catwalk"
-	with description "",
+	with description "The gridded steel catwalk spans the length of the loading dock cavern.  Eastward, it ends at a tunnel heading deeper into the volcano.  To the immediate south is a waiting freight elevator.",
 	e_to AudienceChamber,
 	d_to LoadingDocksHelipad,
+	s_to LoadingDocksHelipad,
 	has;
+
+Prop "Freight Elevator" LoadingDocksCatwalk 
+    with name 'freight' 'elevator' 'freight elevator',
+    with description "It's an open-frame design.  Don't stick your arms out too far if you're fond of them.",
+	has ;	
+	
 
 !=================================
 Room LoadingDocksHelipad "Loading Docks/Helipad"
-	with description "",
+	with description "The docking bay has been built into an ancient lava chamber on the west side of the volcano.  You have a breathtaking view of the island from here, from the lagoon to the blazing white beaches far below, over to the distant reefs and breakwaters in the sapphire blue waters.^Gridded steel panels cover the floor, and a small helicopter sits tucked away on a retractable helipad.  Barrels, boxes, and palleted cargo are stacked high along the walls of the chamber.  To the north, an open steel freight elevator leads up to a catwalk some twenty feet overhead.",
 	u_to LoadingDocksCatwalk,
+	n_to LoadingDocksCatwalk,
 	has;
 
 !=================================

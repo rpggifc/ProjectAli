@@ -2,7 +2,7 @@
 <trizbort>
 	<info />
 	<map>
-		<room id="1" name="Loading Docks/Catwalk" x="-672" y="0" w="160" h="64" description="" />
+		<room id="1" name="Catwalk" x="-672" y="0" w="160" h="64" description="" />
 		<room id="2" name="Corridor Intersection" x="-224" y="0" w="128" h="64" description="" />
 		<room id="3" name="Bulk Storage" x="160" y="-32" w="160" h="128" description="">
 			<objects at="wsw">Shark food canister</objects>
@@ -55,7 +55,7 @@
 			<dock index="0" id="5" port="s" />
 			<dock index="1" id="20" port="n" />
 		</line>
-		<room id="22" name="Loading Docks / Helipad" x="-672" y="96" w="160" h="160" description="" />
+		<room id="22" name="Loading Dock" x="-672" y="96" w="160" h="160" description="" />
 		<line id="23">
 			<dock index="0" id="1" port="s" />
 			<dock index="1" id="22" port="n" />
