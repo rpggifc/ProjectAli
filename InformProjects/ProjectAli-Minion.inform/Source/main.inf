@@ -352,6 +352,13 @@ Room AudienceChamber "Audience Chamber"
 	e_to WestCorridorIntersection,
 	w_to LoadingDocksCatwalk,
 	s_to InnerSanctum,
+	each_turn [;
+		if(Barrel in AudienceChamber)
+		{
+			move Barrel to LoadingDocksCatwalk;
+			"^The steel barrel, having picked up a decent turn of speed, trundles across the room and vanishes into the western tunnel.";
+		}
+	],
 	has;
 
 Prop "glass floor" AudienceChamber
@@ -411,6 +418,26 @@ Room LoadingDocksCatwalk "Loading Docks/Catwalk"
 	e_to AudienceChamber,
 	d_to Elevator,
 	s_to Elevator,
+	each_turn [;
+		if(Barrel in LoadingDocksCatwalk)
+		{
+			move Barrel to Nowhere;
+			move CatwalkGuard to Nowhere;
+			"^The steel barrel clatters along the steel catwalk.  The surprised guard makes the fatal mistake of trying to stop it - with a thud and a scream, it sweeps him off the catwalk's end and out into the azure void.  You rush forward to watch - and then rather wish you hadn't.";
+		}
+		else
+		if(CatwalkGuard in LoadingDocksCatwalk)
+		{
+			switch (random(4))
+			{
+				1: "The guard watches you suspiciously.";  
+				2: rtrue;
+				3: rtrue;
+				4: rtrue;
+			}
+		}
+	],
+	
 	has;
 
 Prop Elevator "Freight Elevator" 
@@ -433,7 +460,11 @@ Prop Elevator "Freight Elevator"
 
 	has static door open scenery ~concealed;
 	
-
+NPC CatwalkGuard "guard" LoadingDocksCatwalk
+	with name 'guard' 'henchman' 'mook',
+	with description "He's dressed in regulation black, with a slung sub-machinegun and an alert 'take-no-nonsense' expression.",   
+	has;
+	
 !=================================
 Room LoadingDocksHelipad "Loading Docks/Helipad"
 	with description "The docking bay has been built into an ancient lava chamber on the west side of the volcano.  You have a breathtaking view of the island from here, from the lagoon to the blazing white beaches far below, over to the distant reefs and breakwaters in the sapphire blue waters.^Gridded steel panels cover the floor, and a small helicopter sits tucked away on a retractable helipad.  Barrels, boxes, and palleted cargo are stacked high along the walls of the chamber.  To the north, an open steel freight elevator leads up to a catwalk some twenty feet overhead.",
