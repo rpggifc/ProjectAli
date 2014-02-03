@@ -53,6 +53,7 @@ Class NPC
     has animate male talkable;
 
 !----------------- Rooms / Scenery / Props -----------------
+Room Erehwon "erehwon" has;
 Room Nowhere "nowhere" has;
 
 !=================================
@@ -309,7 +310,23 @@ Room BulkStorage "Bulk Storage"
 	w_to EastCorridorIntersection,
 	has;
 
-Item Barrel "Steel Barrel" BulkStorage
+Prop BulkStorageStuff "bulk storage stuff" BulkStorage
+	with description "You wander back and forth down the shelves, but can see nothing else of interest."
+	
+	with name 'boxes' 'barrels' 'bags' 'crates' 'containers' 'shelves',
+	with before [;
+		Examine:
+			if(Barrel in Erehwon)
+			{
+				move Barrel to BulkStorage;
+				"There's too much here for any kind of intensive search, but you do manage to locate a single barrel of shark food.";
+			}
+			rfalse;
+		Take: "There's a whole room full of stuff.  You're going to need bigger pockets.";
+	],
+	has;
+
+Item Barrel "Steel Barrel" Erehwon
 	with name 'steel' 'barrel' 'steel barrel' 'shark food' 'food' 'shark'
 	with description "It's a heavy steel-rimmed barrel.",
 	with before [;
@@ -326,6 +343,7 @@ Item Barrel "Steel Barrel" BulkStorage
 			}
 			give Barrel onItsSide;
 			"You heave it over onto its side.  It hits the steel deck with a resounding crash.";
+		Open:"Maybe you should open it when you get it to the shark tank first.";
     ],
     has ~onItsSide; 
 	
@@ -398,14 +416,26 @@ Prop "Trapdoor Button" AudienceChamber
 	
 !=================================
 Room InnerSanctum "Inner Sanctum"
-	with description "This is apparently where Doctor Damnation unwinds after a hard day's evil.  There's a comfy-looking couch opposite a truly massive television, a cocktail bar, a couple of bookshelves crammed with boardgames, a dissection slab, and a glass box bearing the legend 'In case of EMERGENCY, break glass'.",
+	with description "This is apparently where Doctor Damnation unwinds after a hard day's evil.  There's a comfy-looking couch opposite a truly massive television, a cocktail bar, a couple of bookshelves crammed with boardgames, a dissection slab, and a small box affixed to the wall.",
 	n_to AudienceChamber,
 	has;
 
-Item EmergencyBox "Emergency Box" InnerSanctum 
+Prop EmergencyBox "Emergency Box" InnerSanctum 
     with name 'emergency' 'box' 'glass' 'glass box',
-    with description "It's a box.  NEED TO IMPLEMENT SMASHED/UNSMASHED DESCRIPTION AND PROPERTY",
-	has scenery container ~open openable;	
+    with description [;
+		if(self has open)
+			"The glass has been smashed.  Nothing remains inside.";
+		"The box is affixed to the wall, and is on the small side, maybe the size of a paperback novel.  The front is tinted glass, bearing the legend 'In case of EMERGENCY, break glass'.  You cannot see inside.";
+	],
+	with before[;
+		Attack,Break,Smash,Open:
+			if(self has open)
+				"You've already smashed it open.";
+			give self open;
+			move Keyfob to InnerSanctum;
+			"You shatter the thin glass with your elbow.  A strange object falls to the floor amid the glass splinters.";
+	],
+	has container ~open;	
 	
 Item Keyfob "Keyfob" EmergencyBox
 	with name 'keyfob' 'fob' 'key',
@@ -445,6 +475,10 @@ Prop Elevator "Freight Elevator"
     with description "It's an open-frame design.  Don't stick your arms out too far if you're fond of them.",
 	found_in LoadingDocksCatwalk LoadingDocksHelipad,
 	door_to [;
+		if(CatwalkGuard in location)
+		{
+			"The guard levels his submachinegun at you until you back away.  It looks like the loading dock is off-limits for the moment.";
+		}
 		print "You step into the elevator and fiddle with the controls.  ";
 		if(player in LoadingDocksCatwalk)
 		{
@@ -579,6 +613,14 @@ Item Badge "badge" Nowhere
 
 [LookTimeSub;
 	"You must have left your watch in your other jumpsuit.  You have no idea what time it is.";
+];
+
+[BreakSub;
+	return AttackSub();
+];
+
+[SmashSub;
+	return AttackSub();
 ];
 
 [CheckAccessToDetentionLevel;
