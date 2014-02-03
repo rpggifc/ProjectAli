@@ -306,7 +306,11 @@ Room BulkStorage "Bulk Storage"
 	w_to EastCorridorIntersection,
 	has;
 
-
+Item Barrel "Steel Barrel" BulkStorage
+	with name 'steel' 'barrel' 'steel barrel' 'shark food' 'food' 'shark'
+	with description "It's a heavy steel-rimmed barrel.",
+	has ;
+	
 !=================================
 Room ProjectGRUE "Project G.R.U.E."
 	with description "TEST DESCRIPTION",
@@ -373,6 +377,16 @@ Room InnerSanctum "Inner Sanctum"
 	n_to AudienceChamber,
 	has;
 
+Item EmergencyBox "Emergency Box" InnerSanctum 
+    with name 'emergency' 'box' 'glass' 'glass box',
+    with description "It's a box.  NEED TO IMPLEMENT SMASHED/UNSMASHED DESCRIPTION AND PROPERTY",
+	has scenery container ~open openable;	
+	
+Item Keyfob "Keyfob" EmergencyBox
+	with name 'keyfob' 'fob' 'key',
+	with description "It's a mysterious device.",
+	has ;
+
 !=================================
 Room LoadingDocksCatwalk "Loading Docks/Catwalk"
 	with description "The gridded steel catwalk spans the length of the loading dock cavern.  Eastward, it ends at a tunnel heading deeper into the volcano.  To the immediate south is a waiting freight elevator.",
@@ -381,9 +395,19 @@ Room LoadingDocksCatwalk "Loading Docks/Catwalk"
 	s_to LoadingDocksHelipad,
 	has;
 
-Prop "Freight Elevator" LoadingDocksCatwalk 
+Prop "Freight Elevator" 
     with name 'freight' 'elevator' 'freight elevator',
     with description "It's an open-frame design.  Don't stick your arms out too far if you're fond of them.",
+	found_in LoadingDocksCatwalk LoadingDocksHelipad
+		with before [;
+			Go, Enter: print "You step into the elevator and fiddle with the controls.  ";
+				if(player in LoadingDocksCatwalk)
+				{
+					print "Moments later, you're standing on the gridded floor of the loading dock.^"; 
+					<<Go d_obj>>;
+				}
+				print "The elevator smoothly ascends to the overhead catwalk.^"; <<Go u_obj>>;
+    ],
 	has ;	
 	
 
