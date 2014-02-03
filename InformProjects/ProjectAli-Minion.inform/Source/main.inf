@@ -15,6 +15,9 @@ Global gasmask_solved = 0;
 Global badge_shown_to_henchman = 0;
 Global turns_in_darkness = 0;
 
+!----------------- Attributes -------------
+Attribute onItsSide;
+
 !----------------- Classes -----------------
 Class Room
 	has light scenery;
@@ -309,7 +312,22 @@ Room BulkStorage "Bulk Storage"
 Item Barrel "Steel Barrel" BulkStorage
 	with name 'steel' 'barrel' 'steel barrel' 'shark food' 'food' 'shark'
 	with description "It's a heavy steel-rimmed barrel.",
-	has ;
+	with before [;
+		Take: "It's far too heavy.  You look around for a hand trolley, but none seem to be around.";
+		Pull,Push:
+			if(Barrel has onItsSide)
+			{
+				switch(location){
+					BulkStorage: move Barrel to EastCorridorIntersection;
+					EastCorridorIntersection: move Barrel to WestCorridorIntersection;
+					WestCorridorIntersection: move Barrel to AudienceChamber;
+				}
+				"You give it a mighty heave.  It rolls westward into the next room.";
+			}
+			give Barrel onItsSide;
+			"You heave it over onto its side.  It hits the steel deck with a resounding crash.";
+    ],
+    has ~onItsSide; 
 	
 !=================================
 Room ProjectGRUE "Project G.R.U.E."
@@ -391,31 +409,36 @@ Item Keyfob "Keyfob" EmergencyBox
 Room LoadingDocksCatwalk "Loading Docks/Catwalk"
 	with description "The gridded steel catwalk spans the length of the loading dock cavern.  Eastward, it ends at a tunnel heading deeper into the volcano.  To the immediate south is a waiting freight elevator.",
 	e_to AudienceChamber,
-	d_to LoadingDocksHelipad,
-	s_to LoadingDocksHelipad,
+	d_to Elevator,
+	s_to Elevator,
 	has;
 
-Prop "Freight Elevator" 
+Prop Elevator "Freight Elevator" 
     with name 'freight' 'elevator' 'freight elevator',
     with description "It's an open-frame design.  Don't stick your arms out too far if you're fond of them.",
-	found_in LoadingDocksCatwalk LoadingDocksHelipad
-		with before [;
-			Go, Enter: print "You step into the elevator and fiddle with the controls.  ";
-				if(player in LoadingDocksCatwalk)
-				{
-					print "Moments later, you're standing on the gridded floor of the loading dock.^"; 
-					<<Go d_obj>>;
-				}
-				print "The elevator smoothly ascends to the overhead catwalk.^"; <<Go u_obj>>;
+	found_in LoadingDocksCatwalk LoadingDocksHelipad,
+	door_to [;
+		print "You step into the elevator and fiddle with the controls.  ";
+		if(player in LoadingDocksCatwalk)
+		{
+			print "Moments later, you're standing on the gridded floor of the loading dock.^"; 
+			return LoadingDocksHelipad;
+		}
+		print "The elevator smoothly ascends to the overhead catwalk.^"; 
+		return LoadingDocksCatwalk;
     ],
-	has ;	
+	door_dir [;
+		if (self in LoadingDocksCatwalk) return s_to; return n_to;
+	],
+
+	has static door open scenery ~concealed;
 	
 
 !=================================
 Room LoadingDocksHelipad "Loading Docks/Helipad"
 	with description "The docking bay has been built into an ancient lava chamber on the west side of the volcano.  You have a breathtaking view of the island from here, from the lagoon to the blazing white beaches far below, over to the distant reefs and breakwaters in the sapphire blue waters.^Gridded steel panels cover the floor, and a small helicopter sits tucked away on a retractable helipad.  Barrels, boxes, and palleted cargo are stacked high along the walls of the chamber.  To the north, an open steel freight elevator leads up to a catwalk some twenty feet overhead.",
-	u_to LoadingDocksCatwalk,
-	n_to LoadingDocksCatwalk,
+	u_to Elevator,
+	n_to Elevator,
 	has;
 
 !=================================
