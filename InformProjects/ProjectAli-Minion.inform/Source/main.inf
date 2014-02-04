@@ -303,7 +303,31 @@ Room Barracks "Barracks"
 	with description "A dozen bunks line each of the walls of this narrow room, made up in military precision.  The whole room is painfully neat.  A small table sits beside the door.",
 	s_to WestCorridorIntersection,
 	has ;
+
+NPC BarracksGuard "guard" Barracks
+	with name 'guard',
+	with description "He's looking a bit wan.  Long shift, perhaps.  He's thumbing through a dogeared copy of 'Doctor Jeckyl and Mister Hyde'.",
+	with initial "A guard relaxes on a nearby bunk, a dogeared paperback in hand.",
+	each_turn [;
+		switch (random(8))
+		{
+			1: "The guard turns a page."; 
+			2: "The guard hides a yawn behind his hand.";
+			default:rtrue;
+		}
+	],
 	
+	has ;
+	
+Furniture BarracksTable "table" Barracks
+	with name 'table' 'bench',
+	with description "Spartan, military chic is so last season.",
+	has scenery;
+	
+Item coffeepot "coffee pot" BarracksTable
+	with name 'coffee' 'pot' 'coffee pot',
+	with description "You eye the evil brew with apprehension.  It looks strong enough to kick Superman's arse, and make him like it, too.",
+	has ;
 !==================================
 Room BulkStorage "Bulk Storage"
 	with description "Boxes, bags, barrels, crates, containers, and all manner of things that a secret hide-out needs fill the floor-to-ceiling shelves.",
@@ -342,8 +366,8 @@ Item Barrel "Steel Barrel" Erehwon
 				"You give it a mighty heave.  It rolls westward into the next room.";
 			}
 			give Barrel onItsSide;
-			"You heave it over onto its side.  It hits the steel deck with a resounding crash.";
-		Open:"Maybe you should open it when you get it to the shark tank first.";
+			"You heave it over onto its side.  It hits the steel deck with a resounding crash and rolls a few feet before stopping.";
+		Open:"Maybe you should open it when you get it over to the shark tank instead.";
     ],
     has ~onItsSide; 
 	
