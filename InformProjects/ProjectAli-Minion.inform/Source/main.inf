@@ -14,7 +14,6 @@ Include "VerbLib";
 Global gasmask_solved = 0;
 Global badge_shown_to_henchman = 0;
 Global turns_in_darkness = 0;
-
 !----------------- Attributes -------------
 Attribute onItsSide;
 
@@ -53,8 +52,8 @@ Class NPC
     has animate male talkable;
 
 !----------------- Rooms / Scenery / Props -----------------
-Room Erehwon "erehwon" has;
-Room Nowhere "nowhere" has;
+Room OffStage "OffStage" has;  ! altered "nowhere" room into a pre-use room "OffStage" and a discard room "TrashRoom"
+Room TrashRoom "TrashRoom" has;
 
 !=================================
 Room Cell "Cell"
@@ -340,7 +339,7 @@ Prop BulkStorageStuff "bulk storage stuff" BulkStorage
 	with name 'boxes' 'barrels' 'bags' 'crates' 'containers' 'shelves',
 	with before [;
 		Examine:
-			if(Barrel in Erehwon)
+			if(Barrel in OffStage)
 			{
 				move Barrel to BulkStorage;
 				"There's too much here for any kind of intensive search, but you do manage to locate a single barrel of shark food.";
@@ -350,7 +349,7 @@ Prop BulkStorageStuff "bulk storage stuff" BulkStorage
 	],
 	has;
 
-Item Barrel "Steel Barrel" Erehwon
+Item Barrel "Steel Barrel" OffStage
 	with name 'steel' 'barrel' 'steel barrel' 'shark food' 'food' 'shark'
 	with description "It's a heavy steel-rimmed barrel.",
 	with before [;
@@ -400,8 +399,16 @@ Room AudienceChamber "Audience Chamber"
 			move Barrel to LoadingDocksCatwalk;
 			"^The steel barrel, having picked up a decent turn of speed, trundles across the room and vanishes into the western tunnel.";
 		}
+		if(DoctorDamnation in OffStage && Barrel in TrashRoom)
+		{
+			move Escort to AudienceChamber;
+			move DoctorDamnation to AudienceChamber;
+			"^Doctor Damnation strides in from the east, an armed guard at his side.  He looks pointedly at the sharks as you brace to attention.^^~They're not fed,~ he states coldly.  ~Why are they not fed?~";
+			
+			
+		}
 	],
-	has;
+	has ;
 
 Prop "glass floor" AudienceChamber
     with name 'glass' 'floor' 'ground',
@@ -438,6 +445,38 @@ Prop "Trapdoor Button" AudienceChamber
     with description "It glows red.",
 	has ;	
 	
+Npc DoctorDamnation "Doctor Damnation" OffStage
+	with name 'doctor' 'damnation' 'doc',
+	with description "He does not beget description - just flashes, impressions.  When you find yourself the singular focus of his attention, and his eyes burn into yours... your gaze drops.  When you don't have his attention, you keep your head down and hope things stay that way.",
+	with initial "Doctor Damnation himself stands before you, cloaked in his usual raiment of wrath and impatience.",
+	with before [;
+		Ask:"Doctor Damnation does not look to be in the mood for answering your questions.  He looks more to be in the mood for dropping you headfirst into the shark tank unless you answer his.";
+		Tell:
+			if(second == 'food' or 'barrel' or 'shark' or 'sharks')
+			{
+				move DoctorDamnation to TrashRoom;
+				"~I... ah...~ you stammer.  ~We're... ah... out of shark food.~ You can feel a rivulet of sweat trickling down your face.^^The Doctor stares at you a moment longer, then makes a note on his tablet.  ~Fine.  Fetch the prisoner - she's scheduled for termination anyway.~^^He looks at the guard at his shoulder.  ~Let me know when it's done.~^^~Yes sir.~  The guard braces to attention.  Satisfied, the Doctor heads for his private chambers behind the throne.";
+			}
+			"You open your mouth and stammer something inaudible.  The Doctor watches you pitilessly.";
+			
+		Attack:"Attack?  Are you crazy?!?";
+		Kiss:"You throw yourself to the ground and grovel, even crawling forward to kiss his booted feet.  The Doctor watches dispassionately.";
+		Hug:
+			deadflag = true;
+			"The guard interprets your move as an attack, and before you can take more than a step forward, opens fire with his SMG.";
+	],
+	has ;
+	
+NPC Escort "guard" OffStage
+	with name 'guard' 'escort' 'Largo'
+	with description "Black uniform with the Damnation shoulder flash, black submachinegun, black disposition.  The name tag reads 'Largo'.",
+	with initial [;
+		if(DoctorDamnation in location)
+			"An armed guard stands at his shoulder.";
+		"An armed guard watches you suspiciously.";
+	],
+	has ;
+	
 !=================================
 Room InnerSanctum "Inner Sanctum"
 	with description "This is apparently where Doctor Damnation unwinds after a hard day's evil.  There's a comfy-looking couch opposite a truly massive television, a cocktail bar, a couple of bookshelves crammed with boardgames, a dissection slab, and a small box affixed to the wall.",
@@ -457,13 +496,13 @@ Prop EmergencyBox "Emergency Box" InnerSanctum
 				"You've already smashed it open.";
 			give self open;
 			move Keyfob to InnerSanctum;
-			"You shatter the thin glass with your elbow.  A strange object falls to the floor amid the glass splinters.";
+			"You cover your eyes and shatter the thin glass with your elbow.  A strange object falls to the floor amid the splinters of glass.";
 	],
 	has container ~open;	
 	
 Item Keyfob "Keyfob" EmergencyBox
-	with name 'keyfob' 'fob' 'key',
-	with description "It's a mysterious device.",
+	with name 'keyfob' 'fob' 'key' 'device',
+	with description "It's a mysterious device",
 	has ;
 
 !=================================
@@ -475,9 +514,9 @@ Room LoadingDocksCatwalk "Loading Docks/Catwalk"
 	each_turn [;
 		if(Barrel in LoadingDocksCatwalk)
 		{
-			move Barrel to Nowhere;
-			move CatwalkGuard to Nowhere;
-			"^The steel barrel clatters along the steel catwalk.  The surprised guard makes the fatal mistake of trying to stop it - with a thud and a scream, it sweeps him off the catwalk's end and out into the azure void.  You rush forward to watch - and then rather wish you hadn't.";
+			move Barrel to TrashRoom;
+			move CatwalkGuard to TrashRoom;
+			"^The steel barrel clatters along the steel catwalk.  The surprised guard makes the fatal mistake of trying to stop it - with a thud and a scream, it sweeps him off the catwalk's end and out into the azure void.  You rush forward to watch - and then rather wish you hadn't. You look around nervously - no-one seems to have noticed...";
 		}
 		else
 		if(CatwalkGuard in LoadingDocksCatwalk)
@@ -548,7 +587,7 @@ Item JumpSuit "Jump Suit"
 	with description "It is a dark blue jump suit with white and black lines down the arms, sides and the legs.  It also has a few pockets to store stuff.  Very fashionable.",
 	with before [;	disrobe: "You start to take off the jumpsuit, but notice a massive waft of chest hair.  You guess you're probably not wearing anything underneath it, plus we'd much rather you keep your cloths on!  You think twice about removing the Jump Suit and zip the top back up.";
 				drop: "You'd have to take the Jump Suit off to do that!";
-				search:	if (badge in Nowhere) {
+				search:	if (badge in OffStage) {
             						move badge to player;
             						score++;
 							"You start checking the many pockets that are in the jump suit, most of them are empty, except the last one.  You reach your hand in and pull out a badge.  EUREKA!  ";
@@ -559,7 +598,7 @@ Item JumpSuit "Jump Suit"
 	;],
 	has clothing container;
 
-Item Badge "badge" Nowhere
+Item Badge "badge" OffStage
 	with name 'badge',
 	with description "It is a badge for the XYZ Corp, there is a clip on the back to fasten it to something.  There is no picture but it looks like there is a name on it.  The name says ~Dave.~",
 	with after [; 	wear: 
