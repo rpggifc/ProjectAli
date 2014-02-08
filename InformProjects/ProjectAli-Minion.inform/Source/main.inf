@@ -14,6 +14,8 @@ Include "VerbLib";
 Global gasmask_solved = 0;
 Global badge_shown_to_henchman = 0;
 Global turns_in_darkness = 0;
+!Global turns_until_shot = 5;
+Global walk_away = 0;
 !----------------- Attributes -------------
 Attribute onItsSide;
 
@@ -390,9 +392,9 @@ Room ProjectGRUE "Project G.R.U.E."
 !=================================
 Room AudienceChamber "Audience Chamber"
 	with description "You stand in Doctor Damnation's vast audience chamber.  Sunlight streams in from the glass and steel roof overhead and reflects off the chamber walls, natural volcanic rock polished to a mirror's smoothness.  The floor is a slab of glass, with the chamber continuing down for an unknowable depth, and filled with water up to the level of about six feet below the floor.  A dozen sharks circle lazily below.^An imposing throne sits atop a raised dais on the south wall.  Behind it, you see a small grey door bearing Doctor Damnation's crest.  Exits lie east and west.",
-	e_to WestCorridorIntersection,
-	w_to LoadingDocksCatwalk,
-	s_to InnerSanctum,
+	e_to [; return CheckAudienceChamberCanExit(WestCorridorIntersection);],
+	w_to [; return CheckAudienceChamberCanExit(LoadingDocksCatwalk);],
+	s_to [; return CheckAudienceChamberCanExit(InnerSanctum);],
 	each_turn [;
 		if(Barrel in AudienceChamber)
 		{
@@ -409,6 +411,20 @@ Room AudienceChamber "Audience Chamber"
 		}
 	],
 	has ;
+
+[CheckAudienceChamberCanExit x;
+	if(DoctorDamnation in location)
+	{
+		if(walk_away==1)
+		{
+			deadflag = 1;
+			"You take a further two steps away.  You do not live to take a third.";
+		}
+		walk_away = 1;
+		"You take a couple of steps away from Doctor Damnation, but pause when you hear the distinctive click of a safety disengaging.";
+	}
+	return x;
+];
 
 Prop "glass floor" AudienceChamber
     with name 'glass' 'floor' 'ground',
@@ -455,7 +471,7 @@ Npc DoctorDamnation "Doctor Damnation" OffStage
 			if(second == 'food' or 'barrel' or 'shark' or 'sharks')
 			{
 				move DoctorDamnation to TrashRoom;
-				"~I... ah...~ you stammer.  ~We're... ah... out of shark food.~ You can feel a rivulet of sweat trickling down your face.^^The Doctor stares at you a moment longer, then makes a note on his tablet.  ~Fine.  Fetch the prisoner - she's scheduled for termination anyway.~^^He looks at the guard at his shoulder.  ~Let me know when it's done.~^^~Yes sir.~  The guard braces to attention.  Satisfied, the Doctor heads for his private chambers behind the throne.";
+				"~I... ah...~ you stammer.  ~We're... ah... out of shark food.~ You can feel a rivulet of sweat trickling down your face.^^The Doctor stares at you a moment longer, then makes a note on his tablet.  ~Fine.  Fetch the prisoner - she's scheduled for termination anyway.~^^He looks at the guard at his shoulder.  ~Let me know when it's done.~^^~Yes sir.~  The guard braces to attention.  Satisfied, the Doctor heads alone for his private chambers behind the throne.";
 			}
 			"You open your mouth and stammer something inaudible.  The Doctor watches you pitilessly.";
 			
