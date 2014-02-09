@@ -14,11 +14,11 @@ Include "VerbLib";
 Global gasmask_solved = 0;
 Global badge_shown_to_henchman = 0;
 Global turns_in_darkness = 0;
-!Global turns_until_shot = 5;
+Global turns_until_shot = 5;
 Global walk_away = 0;
 !----------------- Attributes -------------
 Attribute onItsSide;
-
+Attribute namedMook;
 !----------------- Classes -----------------
 Class Room
 	has light scenery;
@@ -53,6 +53,19 @@ Class NPC
     ],
     has animate male talkable;
 
+Class NamedGuard
+    with life [;
+    ],
+	with short_name "guard",
+	has ~namedMook ~proper animate male talkable;
+
+[NameAGuard obj theName;
+	obj.short_name = theName;
+	give obj namedMook;
+	give obj proper;
+
+];
+
 !----------------- Rooms / Scenery / Props -----------------
 Room OffStage "OffStage" has;  ! altered "nowhere" room into a pre-use room "OffStage" and a discard room "TrashRoom"
 Room TrashRoom "TrashRoom" has;
@@ -74,30 +87,30 @@ Furniture Bed "bed" Cell
 NPC Prisoner "prisoner" Bed
 	with name 'prisoner',
 	description [;
-		print "The prisoner, a male, is laying strapped to the bed.  ";
+		print "The prisoner, a woman, is laying strapped to the bed.  ";
 		if(gasmask in prisoner){
-			"He has a gas mask on his face and is passed out.";
+			"She has a gas mask on his face and is passed out.";
 		}
 		else{
-			"His eyes are open and he looks at you puzzled.";
+			"Her eyes are open and she looks at you puzzled.";
 		}
 	],
 	react_before[;
 		!Take:  if (noun == gasmask) "Finally!";  This will stop the gas mask from being taken
 	],
     	before [;
-		Talk: if(gasmask notin prisoner){"The prisoner looks at you bumfuzzled.^(If you have something specific you want to say to the prisoner, phrase it like: SAY HELLO TO PRISONER or ASK PRISONER ABOUT TOPIC)";} else {"The prisoner lay motionless on the bed.  He's out, so talking to him will do no good.  Perhaps you should've thought about this before you gassed him????";}
-		Thank: if(gasmask notin prisoner){"~Not sure why you're thanking me!  Don't you have a job to do?~  He motions toward the gas mask.";} else {"You get no response.  He is gassed after all, what do you expect?";}
-		Kiss: "Seriously?  Ummmm, no!";
+		Talk: if(gasmask notin prisoner){"The prisoner looks at you bumfuzzled.^(If you have something specific you want to say to the prisoner, phrase it like: SAY HELLO TO PRISONER or ASK PRISONER ABOUT TOPIC)";} else {"The prisoner lay motionless on the bed.  She's out, so talking to her will do no good.  Perhaps you should've thought about this before you gassed her????";}
+		Thank: if(gasmask notin prisoner){"~Not sure why you're thanking me!  Don't you have a job to do?~  She motions toward the gas mask.";} else {"You get no response.  She is gassed after all, what do you expect?";}
+		Kiss: "You might be in the employ of an evil supervillain intent on taking over the world - but you do have some standards.";
 		Hug: "Now is not the time or place for hugging.";
 		Attack,Kick: "It may be in your best interest not to upset the prisoner too much!";
-		Shake: if(gasmask notin prisoner){"That may loosen the straps, so it's probably not the best idea.  He's got to be in there for a reason.";} else {"Shaking the gassed prisoner will do no good.";}
+		Shake: if(gasmask notin prisoner){"That may loosen the straps, so it's probably not the best idea.  She's got to be in there for a reason.";} else {"Shaking the gassed prisoner will do no good.";}
 	],
 	each_turn[;
 		if(gasmask notin prisoner){
 			switch (random(10)){
-				1: "^The prisoner tries to losen the straps holding him down by struggling against them for a bit.";
-				2: "^The prisoner mutters something under his breath.";
+				1: "^The prisoner tries to losen the straps holding her down by struggling against them for a bit.";
+				2: "^The prisoner mutters something under her breath.";
 				3: "^The prisoner looks at you, looks at the gas mask and sighs.";
 			}
 		}
@@ -118,9 +131,9 @@ NPC Prisoner "prisoner" Bed
 		}
 		Ask:
 		switch(second){
-			'badge': if (badge in player && badge has worn && gasmask notin prisoner) {"You show the badge to the prisoner.  He seems unimpressed.  He might be more impressed it it had your picture on it!";} else if (badge in player && badge hasnt worn && gasmask notin prisoner){ "~Looks like you should probably wear it.  But who am I to tell you what to do?~";} else if (gasmask notin prisoner){ "~What are you talking about?~";} else { "ASK BADGE - You get no response from the gassed prisoner."; }
+			'badge': if (badge in player && badge has worn && gasmask notin prisoner) {"You show the badge to the prisoner.  She seems unimpressed.  She might be more impressed it it had your picture on it!";} else if (badge in player && badge hasnt worn && gasmask notin prisoner){ "~Looks like you should probably wear it.  But who am I to tell you what to do?~";} else if (gasmask notin prisoner){ "~What are you talking about?~";} else { "ASK BADGE - You get no response from the gassed prisoner."; }
 			'dave': if (badge in player && badge has worn && gasmask notin prisoner) {"The prisoner looks you over.  ~That must be you, your badge says so!  Funny, there is no picture of you, first day?~";} else if (gasmask notin prisoner){"~Never heard of him!~";} else {"ASK DAVE - You get no response from the gassed prisoner.";}
-			'aiden': if(gasmask notin prisoner){"~Never heard of him!~";} else {"ASK AIDEN - You get no response from the gassed prisoner.";}
+			'aiden': if(gasmask notin prisoner){"~Never heard of her!~";} else {"ASK AIDEN - You get no response from the gassed prisoner.";}
 			default: if(gasmask notin prisoner){"~I have no information for you!  You're going to have to gas it out of me!~";} else {"ASK DEFAULT - You get no response from the gassed prisoner.";}
 		}
 		Tell:  if(gasmask notin prisoner){"The prisoner watches you intently, but says nothing in response.";} else {"TELL DEFAULT - You get no response from the prisoner.";}
@@ -137,7 +150,7 @@ NPC Prisoner "prisoner" Bed
 				give gasmask worn;
 				gasmask_solved = 1;
 				score = score + 5;
-				"You place the gas mask around the nose and mouth of the prisoner, and he seems to mutter ~About time!~, but you're not sure as his eyes roll to the back of his head and he falls asleep.  You hear a click from the door.  He's gassed Jim, or shall we call you Dave?!";
+				"You place the gas mask around the nose and mouth of the prisoner, and she seems to mutter ~About time!~, but you're not sure as her eyes roll to the back of her head and she falls asleep.  You hear a click from the door.  She's gassed Jim, or shall we call you Dave?!";
 			}
 			else if (noun == badge && gasmask notin prisoner){
 				"~Now what would I do with a badge?  Not only that my hands are tied down so I can't just reach out and accept it, now can I?~";
@@ -150,7 +163,7 @@ NPC Prisoner "prisoner" Bed
 	with orders [;
 		default: if(gasmask notin prisoner){"~I'm strapped to this bed, not only that do you really think I'd do what you want me to?~";} else {"WITH ORDERS DEFAULT - You get no response from the gassed prisoner.";}
 	],
-	has ;
+	has female ~male;
 
 Prop CellDoor "cell door" Cell
 	with parse_name [
@@ -305,21 +318,27 @@ Room Barracks "Barracks"
 	s_to WestCorridorIntersection,
 	has ;
 
-NPC BarracksGuard "guard" Barracks
-	with name 'guard',
-	with description "He's looking a bit wan.  Long shift, perhaps.  He's thumbing through a dogeared copy of 'Doctor Jeckyl and Mister Hyde'.",
-	with initial "A guard relaxes on a nearby bunk, a dogeared paperback in hand.",
+NamedGuard BarracksGuard "Drax" Barracks
+	with name 'guard' 'Drax',
+	with description [;
+		NameAGuard(self, "Drax");
+		"He's looking a bit wan.  Long shift, perhaps.  He's thumbing through a dogeared copy of 'Doctor Jeckyl and Mister Hyde'.  His name-tag reads 'Drax'.";
+	],
+	with initial [;
+		!PrintANamedGuard( BarracksGuard);
+		print (A) self, " relaxes on a nearby bunk, a dogeared paperback in hand.";
+		rtrue;
+	],
 	each_turn [;
 		switch (random(8))
 		{
-			1: "The guard turns a page."; 
-			2: "The guard hides a yawn behind his hand.";
-			default:rtrue;
+			1: print (The) self," turns a page."; rtrue;
+			2: print (The) self," hides a yawn behind his hand."; rtrue;
 		}
 	],
-	
 	has ;
-	
+
+
 Furniture BarracksTable "table" Barracks
 	with name 'table' 'bench',
 	with description "Spartan, military chic is so last season.",
@@ -406,8 +425,17 @@ Room AudienceChamber "Audience Chamber"
 			move Escort to AudienceChamber;
 			move DoctorDamnation to AudienceChamber;
 			"^Doctor Damnation strides in from the east, an armed guard at his side.  He looks pointedly at the sharks as you brace to attention.^^~They're not fed,~ he states coldly.  ~Why are they not fed?~";
-			
-			
+		}
+		if(DoctorDamnation in location)
+		{
+			turns_until_shot--;
+			switch(turns_until_shot)
+			{
+				2:"~Answer my question,~ the Doctor grates.  ~Why are the sharks not fed yet?~  He leaves unsaid the reminder that if you didn't feed them, you would be fed to them.";
+				0:
+					deadflag=1;
+					"The Doctor grinds his teeth in irritation, and mimes shooting you between the eyes.  The guard at his shoulder takes the hint.";
+			}
 		}
 	],
 	has ;
@@ -421,15 +449,18 @@ Room AudienceChamber "Audience Chamber"
 			"You take a further two steps away.  You do not live to take a third.";
 		}
 		walk_away = 1;
-		"You take a couple of steps away from Doctor Damnation, but pause when you hear the distinctive click of a safety disengaging.";
+		"You take a couple of steps away from Doctor Damnation, but pause when you hear the distinctive click of a weapon being cocked.";
 	}
 	return x;
 ];
 
 Prop "glass floor" AudienceChamber
-    with name 'glass' 'floor' 'ground',
-    with description "It's solid glass, or maybe some kind of acetate.  You see the outline of a trapdoor in the centre of the room, in front of the dais.",
-    has ;
+	with parse_name [n;
+		while (NextWord() == 'glass' or 'ground' or 'floor') n=n+2;
+		return n;
+	],
+	with description "It's a solid slab of glass, or maybe some kind of acetate.  You see the outline of a trapdoor in the centre of the room, in front of the dais.",
+	has ;
 
 Prop "Audience Chamber Roof" AudienceChamber
     with name 'roof' 'caldera' 'volcano' 'sky',
@@ -483,13 +514,16 @@ Npc DoctorDamnation "Doctor Damnation" OffStage
 	],
 	has ;
 	
-NPC Escort "guard" OffStage
+NamedGuard Escort "Largo" OffStage
 	with name 'guard' 'escort' 'Largo'
-	with description "Black uniform with the Damnation shoulder flash, black submachinegun, black disposition.  The name tag reads 'Largo'.",
+	with description [;
+		NameAGuard(self, "Largo");
+		"Black uniform with the Damnation shoulder flash, black submachinegun, black disposition.  The name tag reads ~Largo~.";
+	],
 	with initial [;
 		if(DoctorDamnation in location)
-			"An armed guard stands at his shoulder.";
-		"An armed guard watches you suspiciously.";
+			print_ret (A) self, " stands at his shoulder.";
+		print_ret (A) self, " watches you suspiciously.";
 	],
 	has ;
 	
@@ -556,7 +590,7 @@ Prop Elevator "Freight Elevator"
 	door_to [;
 		if(CatwalkGuard in location)
 		{
-			"The guard levels his submachinegun at you until you back away.  It looks like the loading dock is off-limits for the moment.";
+			print_ret (The) CatwalkGuard, " levels his submachinegun at you until you back away.  It looks like the loading dock is off-limits for the moment.";
 		}
 		print "You step into the elevator and fiddle with the controls.  ";
 		if(player in LoadingDocksCatwalk)
@@ -573,9 +607,12 @@ Prop Elevator "Freight Elevator"
 
 	has static door open scenery ~concealed;
 	
-NPC CatwalkGuard "guard" LoadingDocksCatwalk
-	with name 'guard' 'henchman' 'mook',
-	with description "He's dressed in regulation black, with a slung sub-machinegun and an alert 'take-no-nonsense' expression.",   
+NamedGuard CatwalkGuard "Morant" LoadingDocksCatwalk
+	with name 'guard' 'Morant',
+	with description [;
+		NameAGuard(self, "Morant");
+		"He's dressed in regulation black, with a slung sub-machinegun and an alert 'take-no-nonsense' expression.  His name-tag reads ~Morant~.";
+	],
 	has;
 	
 !=================================
@@ -650,7 +687,7 @@ Item Badge "badge" OffStage
 
 !Needs to have a verb definition to be able to make this work.  Then you can also add it to the NPC class which is "talkable"
 [ TalkSub;
-	"The proper way of talking to someone is like this: ~SAY <something> TO <someone>~. For example, ~SAY HELLO TO MAN~. 
+	"The proper way of talking to someone is like this: ~SAY <something> TO <someone>~, or ~TELL <someone> ABOUT <something>~.  For example, ~SAY HELLO TO MAN~, or ~TELL MONKEY ABOUT BANANA~. 
 	Try to keep the words short and simple - and do not be too verbose since it is hard for the game to interpret too many words.";
 ];
 
@@ -680,7 +717,7 @@ Item Badge "badge" OffStage
 		give gasmask worn;
 		gasmask_solved = 1;
 		score = score + 5;
-		"You place the gas mask around the nose and mouth of the prisoner, and he seems to mutter ~About time!~, but you're not sure as his eyes roll to the back of his head and he falls asleep.  You hear a click from the door.  He's gassed Jim, or shall we call you Dave?!";
+		"You place the gas mask around the nose and mouth of the prisoner, and she seems to mutter ~About time!~, but you're not sure as her eyes roll to the back of her head and she falls asleep.  You hear a click from the door.  She's gassed Jim, or shall we call you Dave?!";
 	}
 	else{
 		"You raise one leg and slightly lean over. ~Pffffrrrrrt!!~";
